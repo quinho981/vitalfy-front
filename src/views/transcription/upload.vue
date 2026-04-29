@@ -19,7 +19,10 @@
                         <div class="flex gap-x-1">
                             <label class="mb-1" for="name">Nome do Paciente<span class="text-red-500">*</span></label>
                         </div>
-                        <InputText id="name" v-model="form.patient" type="text" class="w-full" placeholder="Digite o nome do paciente..." :class="{ 'p-invalid': errorMessagePatient }" />
+                        <InputText id="name" v-model="form.patient" type="text" class="w-full" maxlength="254" placeholder="Digite o nome do paciente..." :class="{ 'p-invalid': errorMessagePatient }" />
+                        <small v-if="errorMessagePatient" class="text-red-500">
+                            {{ errorMessagePatient }}
+                        </small>
                     </div>
                     <div class="flex gap-4 flex-wrap xl:flex-nowrap mt-2 mb-5">
                         <div class="w-full">
@@ -449,6 +452,7 @@ const buildPayload = () => {
     };
 };
 
+// TODO: USAR VALIDAÇÃO COM ZOD
 const errorMessagePatient = ref(false)
 const errorMessageType = ref(false)
 const validateForm = () => {
@@ -465,6 +469,9 @@ const validateForm = () => {
 
     if (!form.value.patient) {
         errorMessagePatient.value = true
+        isValid = false
+    } else if (form.value.patient.length > 255) {
+        errorMessagePatient.value = 'O nome do paciente deve ter no máximo 255 caracteres.'
         isValid = false
     }
 

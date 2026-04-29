@@ -61,7 +61,7 @@
                                     <Tag
                                         v-if="!transcript.document"
                                         severity="warn" 
-                                        value="Só transcrição" 
+                                        value="transcrição" 
                                         rounded 
                                         class="!text-xs !py-0 ml-2" 
                                     />

@@ -27,5 +27,18 @@ export const AnamneseService = {
         } catch (error) {
             console.error(error);
         }
-    }
+    },
+    async generatePdf(documentId) {
+        const token = Cookies.get('token');
+        try {
+            const response = await api.get(`/documents/${documentId}/pdf`, { 
+                headers: { Authorization: `Bearer ${token}` },
+                responseType: 'blob'
+            });
+            
+            return response.data;
+        } catch (error) {
+            console.error(error);
+        }
+    },
 }

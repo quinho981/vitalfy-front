@@ -27,9 +27,11 @@
                         @click="exportDocument"
                         class="!text-[14px] !font-semibold !py-2 px-3 flex items-center gap-2 border border-slate-200 rounded-lg bg-white hover:bg-gray-100 duration-300
                             dark:border-neutral-700 dark:bg-neutral-900 dark:hover:bg-gray-700"
+                        :disabled="loadingExport"
                     >
-                        <Download :size="17" />
-                        Exportar
+                        <Loader2 v-if="loadingExport" :size="17" class="animate-spin" />
+                        <Download v-else :size="17" />
+                        {{ loadingExport ? 'Carregando' : 'Exportar' }} 
                     </button>
                 </div>
             </div>
@@ -242,6 +244,7 @@
 import { defineAsyncComponent, ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { User, Calendar, Clock, Share2, Download, BrainCircuit, LayoutTemplate, Loader2, Copy } from 'lucide-vue-next';
 import { TranscriptsService } from '@/service/TranscriptsService';
+import { AnamneseService } from '@/service/AnamneseService';
 import { useRoute, useRouter } from "vue-router";
 import { useShowToast } from '@/utils/useShowToast';
 import { useHelpers } from '@/utils/helper';
@@ -252,7 +255,7 @@ const RefineAnamnesis = defineAsyncComponent(() => import('@/components/Modal/Re
 
 const { t } = useI18n();
 const { showSuccess, showError } = useShowToast();
-const { formatPtBrCurto, convertSecondsToMinutes, exportPDF, capitalizeArray } = useHelpers();
+const { formatPtBrCurto, convertSecondsToMinutes, capitalizeArray } = useHelpers();
 
 const route = useRoute();
 const router = useRouter();
@@ -344,9 +347,27 @@ const copyText = () => {
     showSuccess(t('notifications.titles.success'), t('notifications.messages.textCopiedSuccessfully'), 3000)
 };
 
+const loadingExport = ref(false);
 const exportDocument = async () => {
-    await exportPDF(documentContent.value);
-    showSuccess(t('notifications.titles.success'), 'Documento exportado com sucesso!', 3000);
+    loadingExport.value = true;
+
+    try {
+        const blob = await AnamneseService.generatePdf(documentId.value);
+
+        const url = window.URL.createObjectURL(blob);
+
+        // 👉 abre o PDF em nova aba
+        window.open(url, '_blank');
+
+        // limpa memória depois de um tempo
+        setTimeout(() => window.URL.revokeObjectURL(url), 5000);
+
+        showSuccess(t('notifications.titles.success'), 'Documento aberto com sucesso!', 3000);
+    } catch (error) {
+        showError(t('notifications.titles.error'), 'Erro ao abrir PDF', 3000);
+    } finally {
+        loadingExport.value = false;
+    }
 }
 
 const shareDocument = async () => {

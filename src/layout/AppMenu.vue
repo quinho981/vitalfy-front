@@ -8,6 +8,8 @@ import { TranscriptsService } from '@/service/TranscriptsService';
 import { emitter } from '@/eventBus';
 import { useRouter } from 'vue-router';
 import { CircleQuestionMark, Plus } from 'lucide-vue-next';
+import api from '@/services/axios';
+import Cookies from 'js-cookie';
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -80,6 +82,23 @@ const truncate = (text, maxLength) => {
 const redirectToTranscript = () => {
     if (router.currentRoute.value.name !== 'upload') {
         router.push({ name: 'upload' });
+    }
+};
+
+const handleSubscribe = async (plan) => {
+    const token = Cookies.get('token');
+    try {
+        const response = await api.post('/subscription-checkout', { plan }, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const checkoutUrl = response.data.url;
+
+        window.location.href = checkoutUrl;
+    } catch (e) {
+        console.error(e);
     }
 };
 
@@ -237,6 +256,7 @@ const redirectToTranscript = () => {
         </Dialog>
 
         <Signature 
+            @subscribe="handleSubscribe"
             :active="modalSignatureActive"
             @close="closeSignatureModal" 
         />

@@ -66,7 +66,8 @@
 
                     <div class="flex-1"></div>
 
-                    <button 
+                    <button
+                        @click="subscribe"
                         class="w-full mt-5 bg-blue-600 hover:bg-blue-700 active:scale-[0.98] 
                                text-white text-sm font-semibold py-3 rounded-xl 
                                cursor-pointer transition-all duration-150 shadow-md hover:shadow-lg"
@@ -127,18 +128,18 @@
 import { ref, computed } from 'vue';
 
 const props = defineProps({ active: { type: Boolean, default: false } });
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'subscribe']);
 
 const close = () => emit('close', false);
 
 const isVisible = computed(() => props.active);
 
-const selected = ref('anual');
+const selected = ref('pro_annual');
 
 const periods = [
-    { key: 'anual', label: 'Anual', price: 'R$ 249', original: 'R$ 4.788,00/ano → R$ 2.988,00' },
-    { key: 'semestral', label: 'Semestral', price: 'R$ 299', original: 'R$ 2.394,00/semestre' },
-    { key: 'mensal', label: 'Mensal', price: 'R$ 399', original: '' }
+    { key: 'pro_annual', label: 'Anual', price: 'R$ 249', original: 'R$ 4.788,00/ano → R$ 2.988,00' },
+    { key: 'pro_semester', label: 'Semestral', price: 'R$ 299', original: 'R$ 2.394,00/semestre' },
+    { key: 'pro_monthly', label: 'Mensal', price: 'R$ 399', original: '' }
 ];
 
 const currentPeriod = computed(() => 
@@ -154,4 +155,8 @@ const benefits = [
     'signature.modal.benefits.benefit6',
     'signature.modal.benefits.benefit7'
 ];
+
+const subscribe = () => {
+    emit('subscribe', selected.value);
+};
 </script>

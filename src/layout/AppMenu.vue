@@ -5,7 +5,6 @@ import AppMenuItem from './AppMenuItem.vue';
 import Signature from '@/components/Modal/Signature.vue';
 import { useUserStore } from '@/stores/userStore'
 import { TranscriptsService } from '@/service/TranscriptsService';
-import { emitter } from '@/eventBus';
 import { useRouter } from 'vue-router';
 import { CircleQuestionMark, Plus } from 'lucide-vue-next';
 import api from '@/services/axios';
@@ -14,7 +13,7 @@ import Cookies from 'js-cookie';
 const userStore = useUserStore();
 const router = useRouter();
 
-const FREE_PLAN = 'free';
+const FREE_PLAN = 'Free';
 const modalHelpAndSupport = ref(false);
 const modalSignatureActive = ref(false);
 // const model = ref([]);
@@ -85,10 +84,12 @@ const redirectToTranscript = () => {
     }
 };
 
+const isSubscribing = ref(false);
 const handleSubscribe = async (plan) => {
+    isSubscribing.value = true;
     const token = Cookies.get('token');
     try {
-        const response = await api.post('/subscription-checkout', { plan }, {
+        const response = await api.post('/subscription/checkout', { plan }, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -99,6 +100,8 @@ const handleSubscribe = async (plan) => {
         window.location.href = checkoutUrl;
     } catch (e) {
         console.error(e);
+    } finally {
+        isSubscribing.value = false;
     }
 };
 
@@ -141,7 +144,10 @@ const handleSubscribe = async (plan) => {
                     <p>{{ $t("sidebar.helpAndSupport") }}</p>
                 </a>
 
-                <div class="pt-2">
+                <div
+                    v-if="userStore.plan === 'Free'" 
+                    class="pt-2"
+                >
                     <button
                         class="w-full bg-transparent hover:bg-blue-50 dark:hover:bg-blue-950/40 border border-blue-400 dark:border-blue-500/50 active:scale-95 rounded-xl px-3.5 py-3 text-left cursor-pointer transition-all duration-150 outline-none"
                         @click="modalSignatureActive = !modalSignatureActive"
@@ -181,15 +187,18 @@ const handleSubscribe = async (plan) => {
                     <div class="relative flex flex-col items-center">
                         <Avatar 
                             :label="userStore.username.charAt(0)"
-                            :class="{'mr-[8px]': userStore.plan !== 'free'}"
+                            :class="{'mr-[8px]': userStore.plan !== 'Free'}"
                             class="mr-3 flex-shrink-0 uppercase !bg-gradient-to-br !from-blue-500 !to-blue-700 pb-1" 
                             size="small" 
                             :style="{ color: '#ffffff', border: `3px solid ${planColorHexdecimal}`, height: '2.4rem', width: '2.4rem' }" 
                             shape="circle">
                         </Avatar> 
                         <span 
-                            class="absolute top-[26px] right-[10px] text-white text-xs font-semibold px-2 py-0.5 rounded-full"
-                            :class="planColor"
+                            class="absolute top-[26px] text-white text-xs font-semibold px-2 py-0.5 rounded-full"
+                            :class="[
+                                planColor,
+                                userStore.plan === 'Free' ? 'right-[10px]' : 'right-[8px]'
+                            ]"
                         >
                             {{ userStore.plan }}
                         </span>
@@ -256,8 +265,9 @@ const handleSubscribe = async (plan) => {
         </Dialog>
 
         <Signature 
-            @subscribe="handleSubscribe"
             :active="modalSignatureActive"
+            :loading="isSubscribing"
+            @subscribe="handleSubscribe"
             @close="closeSignatureModal" 
         />
     </div>

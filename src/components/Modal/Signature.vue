@@ -28,10 +28,14 @@
                         </button>
                     </div>
 
-                    <div class="flex items-center gap-1.5 bg-white/[0.07] rounded-lg px-2.5 py-1 w-fit mb-4">
+                    <div 
+                        v-if="currentPeriod.key !== 'pro_monthly'"
+                        class="flex items-center gap-1.5 bg-white/[0.07] rounded-lg px-2.5 py-1 w-fit mb-4"
+                    >
                         <i class="pi pi-bolt text-blue-200 text-xs"></i>
                         <span class="text-blue-200 text-[12px] font-medium">
-                            <span v-if="currentPeriod.key === 'anual'">Mais escolhido ·</span> Economize 40%
+                            <span v-if="currentPeriod.key === 'pro_annual'">Mais escolhido ·</span> Economize 
+                            <span>{{ currentPeriod.key === 'pro_annual' ? '38%' : '25%' }}</span>
                         </span>
                     </div>
 
@@ -67,12 +71,15 @@
                     <div class="flex-1"></div>
 
                     <button
+                        :disabled="loading"
                         @click="subscribe"
                         class="w-full mt-5 bg-blue-600 hover:bg-blue-700 active:scale-[0.98] 
                                text-white text-sm font-semibold py-3 rounded-xl 
                                cursor-pointer transition-all duration-150 shadow-md hover:shadow-lg"
+                               :class=" loading ? 'flex items-center justify-center gap-x-2' : ''"
                     >
-                        Quero economizar tempo nas consultas
+                        <Loader2 v-if="loading" :size="17" class="animate-spin" />
+                        {{ loading ? 'Carregando...' : 'Quero economizar tempo nas consultas' }} 
                     </button>
 
                     <p class="text-slate-300 text-[11px] text-center mt-3">
@@ -126,22 +133,30 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import { Loader2 } from 'lucide-vue-next';
 
-const props = defineProps({ active: { type: Boolean, default: false } });
+const props = defineProps({ 
+    active: { 
+        type: Boolean, 
+        default: false 
+    },
+    loading: {
+        type: Boolean,
+        default: false
+    }
+});
 const emit = defineEmits(['close', 'subscribe']);
 
 const close = () => emit('close', false);
 
-const isVisible = computed(() => props.active);
-
 const selected = ref('pro_annual');
-
 const periods = [
-    { key: 'pro_annual', label: 'Anual', price: 'R$ 249', original: 'R$ 4.788,00/ano → R$ 2.988,00' },
-    { key: 'pro_semester', label: 'Semestral', price: 'R$ 299', original: 'R$ 2.394,00/semestre' },
-    { key: 'pro_monthly', label: 'Mensal', price: 'R$ 399', original: '' }
+    { key: 'pro_annual', label: 'Anual', price: 'R$ 124', original: 'R$ 1.497,00/ano' },
+    { key: 'pro_semester', label: 'Semestral', price: 'R$ 149', original: 'R$ 897,00/semestre' },
+    { key: 'pro_monthly', label: 'Mensal', price: 'R$ 199', original: '' }
 ];
 
+const isVisible = computed(() => props.active);
 const currentPeriod = computed(() => 
     periods.find((p) => p.key === selected.value)
 );

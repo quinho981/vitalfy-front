@@ -18,12 +18,12 @@ export const useUserStore = defineStore('user', () => {
                 headers: { Authorization: `Bearer ${token}` }
             })
 
-            userId.value = response.data.id
-            username.value = response.data.name
-            userEmail.value = response.data.email
-            userPhone.value = response.data.phone
-            plan.value = response.data.plans[0].name
-            active.value = response.data.plans[0].pivot.active
+            userId.value = response.data.user.id
+            username.value = response.data.user.name
+            userEmail.value = response.data.user.email
+            userPhone.value = response.data.user.phone
+            plan.value = response.data.plan.name
+            active.value = response.data.plan.name !== 'Free'
 
             Cookies.set('id', userId.value)
             Cookies.set('username', username.value)

@@ -15,6 +15,20 @@ export const SubscriptionService = {
         }
     },
 
+    async verifyCheckout(sessionId) {
+        const token = Cookies.get('token');
+        try {
+            const response = await api.get('/subscription/verify-checkout', {
+                params: { session_id: sessionId },
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error verifying checkout:', error);
+            throw error;
+        }
+    },
+
     async createCheckout(plan) {
         const token = Cookies.get('token');
         try {

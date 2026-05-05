@@ -218,27 +218,36 @@
             </div>
 
         </div>
+        <SubscriptionSuccessModal 
+            v-model:visible="showSubscriptionSuccessModal" 
+        />
     </section>
 </template>
 
 <script setup>
 import { defineAsyncComponent, onMounted, ref, watch, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useLayout } from '@/layout/composables/layout'
 import { useUserStore } from '@/stores/userStore'
 import { DashboardService } from '@/service/DashboardService'
+import { SubscriptionService } from '@/service/SubscriptionService'
 import { Mic, FileText, Clock, OctagonAlert, Timer, Sparkles, TrendingUp, PieChart, HelpCircle } from 'lucide-vue-next'
 import { useHelpers } from '@/utils/helper'
 import ChartLite from '@/components/ChartLite.vue'
+import SubscriptionSuccessModal from '@/components/Modal/SubscriptionSuccessModal.vue'
 
 const ProgressSpinner = defineAsyncComponent(() => import('primevue/progressspinner'))
 
 const { convertSecondsToMinutes } = useHelpers()
+const route = useRoute()
+const router = useRouter()
 const userStore = useUserStore()
 const { getPrimary, getSurface, isDarkTheme } = useLayout()
 
 const loadingSummary = ref(false)
 const loadingCharts = ref(false)
 const loadingTranscripts = ref(false)
+const showSubscriptionSuccessModal = ref(false)
 const weekData = ref([0, 0, 0, 0, 0, 0, 0])
 const pieData = ref(null)
 const pieOptions = ref(null)
@@ -353,10 +362,31 @@ const setColorOptions = () => {
 
 watch([getPrimary, getSurface, isDarkTheme], () => setColorOptions(), { immediate: true })
 
+const checkCheckoutStatus = async () => {
+    if (route.query.checkout_success === 'true' && route.query.session_id) {
+        try {
+            const result = await SubscriptionService.verifyCheckout(route.query.session_id);
+            
+            if (result.success) {
+                await userStore.getUserInfo();
+                
+                showSubscriptionSuccessModal.value = true;
+            }
+        } catch (error) {
+            console.error('Error verifying checkout:', error);
+        }
+    }
+    
+    // if (route.query.checkout_cancelled === 'true') {
+    //     console.log('Checkout cancelled by user');
+    // }
+};
+
 onMounted(() => {
     getSummary()
     getLatestRecentTranscripts()
     getCharts()
     setColorOptions()
+    checkCheckoutStatus()
 })
 </script>

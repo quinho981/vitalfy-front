@@ -77,7 +77,7 @@
                     </div>
                     <router-link
                         :to="{ name: 'transcriptsHistory' }"
-                        class="inline-flex items-center gap-x-1.5 text-xs text-primary-600 hover:text-primary-700 font-medium transition-colors dark:text-blue-400"
+                        class="inline-flex items-center gap-x-1.5 text-xs text-primary-600 font-medium transition-colors dark:text-blue-400 hover:underline"
                     >
                         Ver todos
                         <i class="pi pi-arrow-right text-[10px]" />

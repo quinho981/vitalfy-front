@@ -210,6 +210,12 @@ const applyRefinement = async () => {
 
         refinedContent.value = response.content
         step.value = 'review'
+    } catch (error) {
+        const REQUIRES_PRO = error.response?.data?.requires_pro
+
+        if (REQUIRES_PRO) {
+            console.log('abrir modal')
+        }
     } finally {
         loading.value = false
     }

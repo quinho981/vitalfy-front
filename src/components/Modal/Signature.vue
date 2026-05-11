@@ -11,7 +11,7 @@
     >
         <template #container>
             <div class="flex flex-col md:flex-row overflow-hidden rounded-2xl">
-                <div class="md:w-[44%] bg-[#1e3a5f] p-7 flex flex-col">
+                <div class="md:w-[50%] bg-[#1e3a5f] p-7 flex flex-col">
                     <div class="flex gap-1.5 mb-5 justify-center">
                         <button
                             v-for="opt in periods"
@@ -30,7 +30,7 @@
 
                     <div 
                         v-if="currentPeriod.key !== 'pro_monthly'"
-                        class="flex items-center gap-1.5 bg-white/[0.07] rounded-lg px-2.5 py-1 w-fit mb-4"
+                        class="flex items-center gap-1.5 bg-white/[0.15] rounded-lg px-2.5 py-1 w-fit mb-4"
                     >
                         <i class="pi pi-bolt text-blue-200 text-xs"></i>
                         <span class="text-blue-200 text-[12px] font-medium">

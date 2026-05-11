@@ -10,7 +10,7 @@
                 <TabList>
                     <Tab value="profile">Meu perfil</Tab>
                     <Tab value="preferences">Preferências</Tab>
-                    <Tab value="plan">Plano</Tab>
+                    <Tab value="plan" v-if="userStore.plan !== 'Free'">Plano</Tab>
                     <Tab value="security">Segurança</Tab>
                 </TabList>
             </Tabs>
@@ -49,8 +49,10 @@ import { ProfileTab, PreferencesTab, PlanTab, SecurityTab } from './components'
 import { useShowToast } from '@/utils/useShowToast';
 import { useI18n } from 'vue-i18n';
 import { SelectOptionsService } from '@/service/selectOptionsService'
+import { useUserStore } from '@/stores/userStore';
 
 const { showSuccess, showError } = useShowToast();
+const userStore = useUserStore();
 const { t } = useI18n();
 
 const activeTab = ref('profile');

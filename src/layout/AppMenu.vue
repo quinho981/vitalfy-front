@@ -198,10 +198,10 @@ const handleSubscribe = async (plan) => {
                             class="absolute top-[26px] text-white text-xs font-semibold px-2 py-0.5 rounded-full"
                             :class="[
                                 planColor,
-                                userStore.plan === 'Free' ? 'right-[10px]' : 'right-[8px]'
+                                userStore.plan === 'Free' ? 'right-[8px]' : 'right-[10px]'
                             ]"
                         >
-                            {{ userStore.plan }}
+                            {{ userStore.plan === 'Free' ? 'Free' : 'Pro' }}
                         </span>
                     </div>
                     <div class="flex flex-col w-full min-w-0">

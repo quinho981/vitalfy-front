@@ -7,29 +7,15 @@
         <div v-else class="flex flex-col gap-5">
             <div class="border rounded-lg p-4 flex justify-between items-center dark:border-neutral-700">
                 <div>
-                    <p class="font-semibold text-lg">Plano atual</p>
-                    <p class="text-slate-500 dark:text-slate-400 capitalize">{{ subscription.plan?.name || 'Free' }}</p>
+                    <p class="font-semibold text-lg">{{ subscription.plan?.name || 'Free' }}</p>
+                    <p class="text-slate-500 dark:text-slate-400">Plano atual</p>
+                    <div class="flex items-center gap-1">
+                        <Calendar :size="12" /> <p class="text-sm">Adquirido em: {{ formatDate(subscription.subscription?.created_at) }}</p>
+                    </div>
                 </div>
                 <Tag 
                     :value="subscription.has_subscription ? 'Ativo' : 'Inativo'" 
                     :severity="subscription.has_subscription ? 'success' : 'secondary'" 
-                />
-            </div>
-            <div class="flex gap-4" v-if="subscription.has_subscription">
-                <Button 
-                    label="Cancelar assinatura" 
-                    severity="danger" 
-                    outlined 
-                    class="dark:hover:!bg-red-950"
-                    @click="handleCancelSubscription"
-                    :loading="cancelling"
-                />
-            </div>
-            <div class="flex gap-4" v-else>
-                <Button 
-                    label="Assinar Plano Pro" 
-                    @click="handleSubscribe('PRO_MONTHLY')"
-                    :loading="loading"
                 />
             </div>
         </div>
@@ -38,11 +24,14 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { Loader2 } from 'lucide-vue-next';
+import { Loader2, Calendar } from 'lucide-vue-next';
 import { SubscriptionService } from '@/service/SubscriptionService';
 import { useUserStore } from '@/stores/userStore';
+import { useHelpers } from '@/utils/helper';
 
+const { formatDate } = useHelpers();
 const userStore = useUserStore();
+
 const subscription = ref({
     has_subscription: false,
     plan: { name: 'Free' },

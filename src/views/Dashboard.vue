@@ -363,11 +363,17 @@ const setColorOptions = () => {
 watch([getPrimary, getSurface, isDarkTheme], () => setColorOptions(), { immediate: true })
 
 const checkCheckoutStatus = async () => {
+    if (route.query.checkout_cancelled === 'true') {
+        localStorage.removeItem('pending_checkout_session')
+    } 
+
     if (route.query.checkout_success === 'true' && route.query.session_id) {
         try {
             const result = await SubscriptionService.verifyCheckout(route.query.session_id);
             
             if (result.success) {
+                console.log('Checkout verificado com sucesso. Atualizando informações do usuário...');
+                localStorage.removeItem('pending_checkout_session');
                 await userStore.getUserInfo();
                 
                 showSubscriptionSuccessModal.value = true;
@@ -376,10 +382,6 @@ const checkCheckoutStatus = async () => {
             console.error('Error verifying checkout:', error);
         }
     }
-    
-    // if (route.query.checkout_cancelled === 'true') {
-    //     console.log('Checkout cancelled by user');
-    // }
 };
 
 onMounted(() => {

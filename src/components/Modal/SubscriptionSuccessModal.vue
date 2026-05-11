@@ -95,6 +95,7 @@ const userStore = useUserStore();
 const loading = ref(false);
 
 const closeModal = () => {
+    router.replace({ query: {} })
     emit('update:visible', false);
 };
 

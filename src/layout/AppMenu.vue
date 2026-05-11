@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed } from 'vue';
 
 import AppMenuItem from './AppMenuItem.vue';
 import Signature from '@/components/Modal/Signature.vue';
@@ -94,8 +94,9 @@ const handleSubscribe = async (plan) => {
                 'Authorization': `Bearer ${token}`
             }
         });
-
+            
         const checkoutUrl = response.data.url;
+        localStorage.setItem('pending_checkout_session', response.data.session_id);
 
         window.location.href = checkoutUrl;
     } catch (e) {

@@ -226,12 +226,14 @@ import { useRouter, useRoute } from "vue-router";
 import api from '@/services/axios';
 import Cookies from 'js-cookie';
 import { useHelpers } from '@/utils/helper';
+import { useUserStore } from '@/stores/userStore'
 
 const router = useRouter();
 const route = useRoute();
 const { t } = useI18n();
 const { showSuccess, showError } = useShowToast();
 const { formatSize } = useHelpers();
+const userStore = useUserStore()
 
 const inputMode = ref('record')
 const chatTranscription = ref();
@@ -340,16 +342,20 @@ const transcribeAudio = async () => {
 
     TranscriptsService.store(formData)
         .then(response => {
-            const result = response.data;
-            transcriptId.value = result.id
+            const transcript = response.data.transcript
+            transcriptId.value = transcript.id
 
-            const processedTranscription = processDeepgramResultAndCreateChatDesign(result.conversation, selectedFile.value.name);
+            const processedTranscription = processDeepgramResultAndCreateChatDesign(transcript.conversation, selectedFile.value.name);
             
             chatTranscription.value = processedTranscription.utterances;
             transcriptions.value.unshift(processedTranscription);
 
+            setUsageOnStorage(response.data.remaining)
+
             selectedFile.value = null;
             uploader.value?.clear();
+
+            showSuccess('Sucesso', 'Transcrição gerada com sucesso!', 3000);
         })
         .catch(error => {
             alert('Erro ao transcrever o áudio.');
@@ -358,6 +364,13 @@ const transcribeAudio = async () => {
             isTranscribing.value = false;
         });
 };
+
+const setUsageOnStorage = (remaining) => {
+    if(remaining == null) return;
+
+    userStore.remaining = remaining
+    localStorage.setItem('remaining',  remaining)
+}
 
 const transcribeAndGenerateDocument = async () => {
     if (!validateForm()) return;
@@ -378,8 +391,12 @@ const transcribeAndGenerateDocument = async () => {
         const result = response.data;
 
         if (result) {
+            setUsageOnStorage(response.data.remaining)
+
             loadingTranscribeAndGenerate.value = false
-            redirectTo(result.transcript_id);
+            showSuccess('Sucesso', 'Documento gerado com sucesso!', 3000);
+            
+            redirectTo(result.document.transcript_id);
         }
     } catch (error) {
         loadingTranscribeAndGenerate.value = false

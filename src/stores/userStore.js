@@ -10,6 +10,7 @@ export const useUserStore = defineStore('user', () => {
     const userPhone = ref(Cookies.get('user_phone') || null)
     const plan = ref(Cookies.get('plan') || null)
     const active = ref(Cookies.get('active') || null)
+    const remaining = ref(localStorage.getItem('remaining') || null)
 
     const getUserInfo = async () => {
         const token = Cookies.get('token')
@@ -24,6 +25,7 @@ export const useUserStore = defineStore('user', () => {
             userPhone.value = response.data.user.phone
             plan.value = response.data.plan.name
             active.value = response.data.plan.name !== 'Free'
+            remaining.value = response.data.remaining
 
             Cookies.set('id', userId.value)
             Cookies.set('username', username.value)
@@ -31,6 +33,7 @@ export const useUserStore = defineStore('user', () => {
             Cookies.set('user_phone', userPhone.value || '')
             Cookies.set('plan', plan.value)
             Cookies.set('active', active.value)
+            localStorage.setItem('remaining', remaining.value)
 
             return response.data
         } catch (error) {
@@ -45,6 +48,7 @@ export const useUserStore = defineStore('user', () => {
         userPhone.value = null
         plan.value = null
         active.value = null
+        remaining.value = null
     }
 
     return {
@@ -54,6 +58,7 @@ export const useUserStore = defineStore('user', () => {
         userPhone,
         plan,
         active,
+        remaining,
         getUserInfo,
         reset
     }

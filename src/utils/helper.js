@@ -71,6 +71,21 @@ export const useHelpers = () => {
     const getPatientAvatar = (name = '') =>
         AVATAR_PALETTES[hashName(name) % AVATAR_PALETTES.length]
 
+    const getNextMonthResetDate = () => {
+        const now = new Date();
+
+        const nextMonthDate = new Date(
+            now.getFullYear(),
+            now.getMonth() + 1,
+            1
+        );
+
+        return nextMonthDate.toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit'
+        });
+    };
+
     return {
         formatPtBrCurto,
         convertSecondsToMinutes,
@@ -79,6 +94,7 @@ export const useHelpers = () => {
         formatSize,
         formatTime,
         getInitials,
-        getPatientAvatar
+        getPatientAvatar,
+        getNextMonthResetDate
     };
 }

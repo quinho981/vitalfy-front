@@ -2,29 +2,26 @@
 import { ref, computed } from 'vue';
 
 import AppMenuItem from './AppMenuItem.vue';
-import Signature from '@/components/Modal/Signature.vue';
 import { useUserStore } from '@/stores/userStore'
-import { TranscriptsService } from '@/service/TranscriptsService';
 import { useRouter } from 'vue-router';
 import { CircleQuestionMark, Plus } from 'lucide-vue-next';
 import api from '@/services/axios';
 import Cookies from 'js-cookie';
+import { useHelpers } from '@/utils/helper';
 
+const { getNextMonthResetDate } = useHelpers();
 const userStore = useUserStore();
 const router = useRouter();
 
 const FREE_PLAN = 'Free';
 const modalHelpAndSupport = ref(false);
 const modalSignatureActive = ref(false);
-// const model = ref([]);
-const loading = ref(false);
+const isSubscribing = ref(false);
 
-// TODO: REMOVE COMMENT
 const model = ref([
     {
         label: 'Principal',
         items: [
-            // { label: 'Transcrição', icon: 'pi pi-fw pi-microphone', to: '/transcription', visible: true },
             { label: 'Transcrição', icon: 'pi pi-fw pi-microphone', to: '/upload', visible: true },
             { label: 'Histórico', icon: 'pi pi-fw pi-history', to: '/transcripts/history', visible: true },
             { label: 'Templates', icon: 'pi pi-fw pi-file', to: '/templates', visible: true },
@@ -40,23 +37,6 @@ const model = ref([
     
 ]);
 
-// const newTranscription = () => {
-//     emitter.emit('clear-anamnese'); // resetar variáveis da home e deixar disponível para uma nova transcrição 
-//     router.push('/home');
-// };
-
-// const index = async () => {
-//     loading.value = true;
-
-//     try {
-//         const response = await TranscriptsService.indexPerDate();
-//         // model.value = response.data;
-//         loading.value = false;
-//     } catch (error) {
-//         loading.value = false;
-//     }
-// }
-
 const planColor = computed(() => {
     return userStore.plan === FREE_PLAN ? 'bg-blue-500' : 'bg-yellow-500';
 });
@@ -67,11 +47,11 @@ const planColorHexdecimal = computed(() => {
 
 const redirectTo = (to) => {
     window.open(to, "_blank");
-};
+}
 
 const closeSignatureModal = () => {
     modalSignatureActive.value = false;
-};
+}
 
 const truncate = (text, maxLength) => {
     if (!text) return '';
@@ -82,9 +62,8 @@ const redirectToTranscript = () => {
     if (router.currentRoute.value.name !== 'upload') {
         router.push({ name: 'upload' });
     }
-};
+}
 
-const isSubscribing = ref(false);
 const handleSubscribe = async (plan) => {
     isSubscribing.value = true;
     const token = Cookies.get('token');
@@ -104,16 +83,7 @@ const handleSubscribe = async (plan) => {
     } finally {
         isSubscribing.value = false;
     }
-};
-
-// onMounted(() => {
-//     // index();
-//     emitter.on('refresh-sidebar', index)
-// });
-
-// onBeforeUnmount(() => {
-//     emitter.off('refresh-sidebar', index)
-// })
+}
 </script>
 
 <template>
@@ -162,28 +132,19 @@ const handleSubscribe = async (plan) => {
                                 <p class="text-xs font-medium leading-tight m-0 text-blue-800 dark:text-blue-300">
                                     {{ $t("button.signature.unlockProPlan") }}
                                 </p>
-                                <p class="text-[11px] leading-tight mt-0.5 m-0 text-slate-500 dark:text-slate-400">
-                                    {{ $t("button.signature.onlyRemaining") }}
-                                    <span class="font-medium text-blue-600 dark:text-blue-400">3</span>
-                                    {{ $t("button.signature.transcriptions") }}
+                                <p
+                                    v-if="userStore.remaining > 0"
+                                    class="text-[11px] leading-tight mt-0.5 m-0 text-slate-500 dark:text-slate-400">
+                                    {{ (userStore.remaining > 1) ? 'Restam apenas' : 'Resta apenas' }}
+                                    <span class="font-bold text-[11.5px] text-blue-600 dark:text-blue-400">{{ userStore.remaining }}</span>
+                                    {{ (userStore.remaining > 1) ? 'transcrições' : 'transcrição' }}
                                 </p>
+                                <p v-else class="text-[11px] leading-tight mt-0.5 m-0 text-slate-500 dark:text-slate-400">Seu limite renova em {{ getNextMonthResetDate() }}</p>
                             </div>
                         </div>
                     </button>
                 </div>
 
-                <!-- <div class="flex border-2 border-solid border-[#99f6e4] bg-[#dff7f5] p-2 rounded-lg mt-1">
-                    <div class="flex my-1">
-                        <Avatar label="V" class="mr-2 font-black" size="medium" :style="{ 'background-color': '#14b8a6', color: '#ffffff' }">
-                            <i class="pi pi-fw pi-bolt !text-md"></i>
-                        </Avatar>
-                    </div>
-                    <div class="flex flex-col items-start p-1 w-full">
-                        <div class="text-sm font-bold text-[#275753]">{{ $t("button.signature.unlockProPlan") }}</div>
-                        <div class="flex text-sm items-center my-1 text-[#23786e]">{{ $t("button.signature.onlyRemaining") }} <div class="mx-1 text-base text-black">3</div> {{ $t("button.signature.transcriptions") }}</div>
-                        <Button label="Upgrade" class="w-full text-sm font-bold !text-[12px]"></Button>
-                    </div>
-                </div> -->
                 <div class="flex items-center pt-3 pb-3 relative">
                     <div class="relative flex flex-col items-center">
                         <Avatar 

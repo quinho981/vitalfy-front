@@ -105,12 +105,26 @@
 
                 <div v-for="(utterance, uttIndex) in transcription.utterances" :key="uttIndex" class="mb-2">
                     <div class="rounded-lg p-2">
-                        <div class="flex items-start mb-1">
+                        <div
+                            v-if="utterance.speaker == 0"
+                            class="flex mb-1"
+                        >
                             <div>
-                                <div class="flex items-center gap-2 ">
-                                    <span class="text-xs text-surface-500 dark:text-surface-400">{{ utterance.start }}s</span>
+                                <div class="flex">
+                                    <span class="text-xs text-surface-500 dark:text-surface-400">{{ utterance.start }}s — Falante 1</span>
                                 </div>
                                 <p class="text-surface-800 p-2 rounded-lg bg-surface-100 dark:bg-surface-700 dark:text-surface-200">{{ utterance.text }}</p>
+                            </div>
+                        </div>
+                        <div 
+                            v-else 
+                            class="flex justify-end mb-1"
+                        >
+                            <div>
+                                <div class="flex">
+                                    <span class="text-xs text-surface-500 dark:text-surface-400">{{ utterance.start }}s — Falante 2</span>
+                                </div>
+                                <p class="text-surface-800 p-2 rounded-lg bg-blue-100 dark:bg-blue-900 dark:text-surface-200">{{ utterance.text }}</p>
                             </div>
                         </div>
                     </div>

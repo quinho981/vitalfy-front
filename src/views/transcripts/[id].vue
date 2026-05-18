@@ -120,12 +120,26 @@
                                 <div v-show="activeTab === '0'" class="border border-slate-200 rounded-lg p-4 min-h-[21rem] max-h-[39rem] overflow-y-auto dark:border-gray-700">
                                     <div v-for="(conversation, uttIndex) in conversations" :key="uttIndex" class="mb-2">
                                         <div class="rounded-lg p-2">
-                                            <div class="flex items-start mb-2">
+                                            <div
+                                                v-if="conversation.speaker == 0"
+                                                class="flex mb-1"
+                                            >
                                                 <div>
-                                                    <div class="flex items-center gap-2 ">
-                                                        <span class="text-xs text-gray-500 dark:text-gray-400">{{ conversation.start }}s</span>
+                                                    <div class="flex">
+                                                        <span class="text-xs text-surface-500 dark:text-surface-400">{{ conversation.start }}s — Falante 1</span>
                                                     </div>
-                                                    <p class="text-gray-800 p-2 rounded-lg bg-surface-100 dark:bg-neutral-800 dark:dark:text-gray-200">{{ conversation.text }}</p>
+                                                    <p class="text-surface-800 p-2 rounded-lg bg-surface-100 dark:bg-surface-700 dark:text-surface-200">{{ conversation.text }}</p>
+                                                </div>
+                                            </div>
+                                            <div 
+                                                v-else 
+                                                class="flex justify-end mb-1"
+                                            >
+                                                <div>
+                                                    <div class="flex">
+                                                        <span class="text-xs text-surface-500 dark:text-surface-400">{{ conversation.start }}s — Falante 2</span>
+                                                    </div>
+                                                    <p class="text-surface-800 p-2 rounded-lg bg-blue-100 dark:bg-blue-900 dark:text-surface-200">{{ conversation.text }}</p>
                                                 </div>
                                             </div>
                                         </div>

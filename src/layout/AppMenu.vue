@@ -1,29 +1,27 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed } from 'vue';
 
 import AppMenuItem from './AppMenuItem.vue';
-import Signature from '@/components/Modal/Signature.vue';
 import { useUserStore } from '@/stores/userStore'
-import { TranscriptsService } from '@/service/TranscriptsService';
-import { emitter } from '@/eventBus';
 import { useRouter } from 'vue-router';
 import { CircleQuestionMark, Plus } from 'lucide-vue-next';
+import api from '@/services/axios';
+import Cookies from 'js-cookie';
+import { useHelpers } from '@/utils/helper';
 
+const { getNextMonthResetDate } = useHelpers();
 const userStore = useUserStore();
 const router = useRouter();
 
-const FREE_PLAN = 'free';
+const FREE_PLAN = 'Free';
 const modalHelpAndSupport = ref(false);
 const modalSignatureActive = ref(false);
-// const model = ref([]);
-const loading = ref(false);
+const isSubscribing = ref(false);
 
-// TODO: REMOVE COMMENT
 const model = ref([
     {
         label: 'Principal',
         items: [
-            // { label: 'Transcrição', icon: 'pi pi-fw pi-microphone', to: '/transcription', visible: true },
             { label: 'Transcrição', icon: 'pi pi-fw pi-microphone', to: '/upload', visible: true },
             { label: 'Histórico', icon: 'pi pi-fw pi-history', to: '/transcripts/history', visible: true },
             { label: 'Templates', icon: 'pi pi-fw pi-file', to: '/templates', visible: true },
@@ -39,23 +37,6 @@ const model = ref([
     
 ]);
 
-// const newTranscription = () => {
-//     emitter.emit('clear-anamnese'); // resetar variáveis da home e deixar disponível para uma nova transcrição 
-//     router.push('/home');
-// };
-
-// const index = async () => {
-//     loading.value = true;
-
-//     try {
-//         const response = await TranscriptsService.indexPerDate();
-//         // model.value = response.data;
-//         loading.value = false;
-//     } catch (error) {
-//         loading.value = false;
-//     }
-// }
-
 const planColor = computed(() => {
     return userStore.plan === FREE_PLAN ? 'bg-blue-500' : 'bg-yellow-500';
 });
@@ -66,11 +47,11 @@ const planColorHexdecimal = computed(() => {
 
 const redirectTo = (to) => {
     window.open(to, "_blank");
-};
+}
 
 const closeSignatureModal = () => {
     modalSignatureActive.value = false;
-};
+}
 
 const truncate = (text, maxLength) => {
     if (!text) return '';
@@ -81,16 +62,28 @@ const redirectToTranscript = () => {
     if (router.currentRoute.value.name !== 'upload') {
         router.push({ name: 'upload' });
     }
-};
+}
 
-// onMounted(() => {
-//     // index();
-//     emitter.on('refresh-sidebar', index)
-// });
+const handleSubscribe = async (plan) => {
+    isSubscribing.value = true;
+    const token = Cookies.get('token');
+    try {
+        const response = await api.post('/subscription/checkout', { plan }, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+            
+        const checkoutUrl = response.data.url;
+        localStorage.setItem('pending_checkout_session', response.data.session_id);
 
-// onBeforeUnmount(() => {
-//     emitter.off('refresh-sidebar', index)
-// })
+        window.location.href = checkoutUrl;
+    } catch (e) {
+        console.error(e);
+    } finally {
+        isSubscribing.value = false;
+    }
+}
 </script>
 
 <template>
@@ -122,7 +115,10 @@ const redirectToTranscript = () => {
                     <p>{{ $t("sidebar.helpAndSupport") }}</p>
                 </a>
 
-                <div class="pt-2">
+                <div
+                    v-if="userStore.plan === 'Free'" 
+                    class="pt-2"
+                >
                     <button
                         class="w-full bg-transparent hover:bg-blue-50 dark:hover:bg-blue-950/40 border border-blue-400 dark:border-blue-500/50 active:scale-95 rounded-xl px-3.5 py-3 text-left cursor-pointer transition-all duration-150 outline-none"
                         @click="modalSignatureActive = !modalSignatureActive"
@@ -136,43 +132,37 @@ const redirectToTranscript = () => {
                                 <p class="text-xs font-medium leading-tight m-0 text-blue-800 dark:text-blue-300">
                                     {{ $t("button.signature.unlockProPlan") }}
                                 </p>
-                                <p class="text-[11px] leading-tight mt-0.5 m-0 text-slate-500 dark:text-slate-400">
-                                    {{ $t("button.signature.onlyRemaining") }}
-                                    <span class="font-medium text-blue-600 dark:text-blue-400">3</span>
-                                    {{ $t("button.signature.transcriptions") }}
+                                <p
+                                    v-if="userStore.remaining > 0"
+                                    class="text-[11px] leading-tight mt-0.5 m-0 text-slate-500 dark:text-slate-400">
+                                    {{ (userStore.remaining > 1) ? 'Restam apenas' : 'Resta apenas' }}
+                                    <span class="font-bold text-[11.5px] text-blue-600 dark:text-blue-400">{{ userStore.remaining }}</span>
+                                    {{ (userStore.remaining > 1) ? 'transcrições' : 'transcrição' }}
                                 </p>
+                                <p v-else class="text-[11px] leading-tight mt-0.5 m-0 text-slate-500 dark:text-slate-400">Seu limite renova em {{ getNextMonthResetDate() }}</p>
                             </div>
                         </div>
                     </button>
                 </div>
 
-                <!-- <div class="flex border-2 border-solid border-[#99f6e4] bg-[#dff7f5] p-2 rounded-lg mt-1">
-                    <div class="flex my-1">
-                        <Avatar label="V" class="mr-2 font-black" size="medium" :style="{ 'background-color': '#14b8a6', color: '#ffffff' }">
-                            <i class="pi pi-fw pi-bolt !text-md"></i>
-                        </Avatar>
-                    </div>
-                    <div class="flex flex-col items-start p-1 w-full">
-                        <div class="text-sm font-bold text-[#275753]">{{ $t("button.signature.unlockProPlan") }}</div>
-                        <div class="flex text-sm items-center my-1 text-[#23786e]">{{ $t("button.signature.onlyRemaining") }} <div class="mx-1 text-base text-black">3</div> {{ $t("button.signature.transcriptions") }}</div>
-                        <Button label="Upgrade" class="w-full text-sm font-bold !text-[12px]"></Button>
-                    </div>
-                </div> -->
                 <div class="flex items-center pt-3 pb-3 relative">
                     <div class="relative flex flex-col items-center">
                         <Avatar 
                             :label="userStore.username.charAt(0)"
-                            :class="{'mr-[8px]': userStore.plan !== 'free'}"
+                            :class="{'mr-[8px]': userStore.plan !== 'Free'}"
                             class="mr-3 flex-shrink-0 uppercase !bg-gradient-to-br !from-blue-500 !to-blue-700 pb-1" 
                             size="small" 
                             :style="{ color: '#ffffff', border: `3px solid ${planColorHexdecimal}`, height: '2.4rem', width: '2.4rem' }" 
                             shape="circle">
                         </Avatar> 
                         <span 
-                            class="absolute top-[26px] right-[10px] text-white text-xs font-semibold px-2 py-0.5 rounded-full"
-                            :class="planColor"
+                            class="absolute top-[26px] text-white text-xs font-semibold px-2 py-0.5 rounded-full"
+                            :class="[
+                                planColor,
+                                userStore.plan === 'Free' ? 'right-[8px]' : 'right-[10px]'
+                            ]"
                         >
-                            {{ userStore.plan }}
+                            {{ userStore.plan === 'Free' ? 'Free' : 'Pro' }}
                         </span>
                     </div>
                     <div class="flex flex-col w-full min-w-0">
@@ -238,6 +228,8 @@ const redirectToTranscript = () => {
 
         <Signature 
             :active="modalSignatureActive"
+            :loading="isSubscribing"
+            @subscribe="handleSubscribe"
             @close="closeSignatureModal" 
         />
     </div>

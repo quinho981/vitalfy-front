@@ -22,9 +22,10 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        const status = error?.response?.status;
+        const STATUS = error?.response?.status;
+        const REQUIRES_PRO = error.response?.data?.requires_pro
         
-        if (status === 403) {
+        if (STATUS === 403 && !REQUIRES_PRO) {
             router.push({ name: 'error' }); 
         }
 

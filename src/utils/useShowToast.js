@@ -11,8 +11,13 @@ export const useShowToast = () => {
         toast.add({ severity: 'error', summary, detail, life });
     };
 
+    const showAttention = (summary, detail, life) => {
+        toast.add({ severity: 'warn', summary, detail, life });
+    };
+
     return {
         showSuccess,
-        showError
+        showError,
+        showAttention
     };
 };

@@ -20,7 +20,7 @@
                     <Star
                         :size="18"
                         @click.stop="makeFavorite(template.id)"
-                        v-tooltip="isFavorite(template) ? 'Remover dos favoritos' : 'Marcar como favorito'"
+                        v-tooltip="isFavorite(template) ? 'Remover do favorito' : 'Marcar como favorito'"
                         :class="[
                             'cursor-pointer transition-all',
                             isFavorite(template)

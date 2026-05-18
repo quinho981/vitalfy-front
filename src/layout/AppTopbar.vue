@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { authStore } from '@/stores/authStore'
 import { useRouter } from 'vue-router';
-import { Stethoscope, PanelLeft  } from 'lucide-vue-next';
+import { PanelLeft  } from 'lucide-vue-next';
 
 const { onMenuToggle, toggleDarkMode, isDarkTheme } = useLayout();
 
@@ -47,46 +47,15 @@ const logout = async () => {
                 <button type="button" class="layout-topbar-action" @click="toggleDarkMode">
                     <i :class="['pi', { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i>
                 </button>
-                <!-- <div class="relative">
-                    <button
-                        v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }"
-                        type="button"
-                        class="layout-topbar-action layout-topbar-action-highlight"
-                    >
-                        <i class="pi pi-palette"></i>
-                    </button>
-                    <AppConfigurator />
-                </div> -->
             </div>
-
-            <!-- <button
-                class="layout-topbar-menu-button layout-topbar-action"
-                v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }"
-            >
-                <i class="pi pi-ellipsis-v"></i>
-            </button> -->
-
             <div class="layout-topbar-menu hidden lg:block">
                 <div class="layout-topbar-menu-content">
-                    <!-- <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-calendar"></i>
-                        <span>Calendar</span>
-                    </button>
-                    <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-inbox"></i>
-                        <span>Messages</span>
-                    </button> -->
                     <button type="button" class="layout-topbar-action" @click="toggleMenu">
                         <i class="pi pi-user"></i>
                         <span>Profile</span>
                     </button>
-
                     <OverlayPanel ref="overlayPanel">
                         <div class="flex flex-col gap-2 min-w-[150px]">
-                            <NuxtLink to="/usuario" class="px-3 py-2 hover:bg-gray-100 rounded cursor-pointer">
-                                <i class="pi pi-user-edit mr-2"></i> Meu Perfil
-                            </NuxtLink>
-
                             <Button 
                                 @click="logout" 
                                 :loading="loading" 
@@ -99,7 +68,5 @@ const logout = async () => {
                 </div>
             </div>
         </div>
-
-        
     </div>
 </template>

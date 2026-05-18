@@ -133,6 +133,13 @@
             </div>
         </div>
     </Dialog>
+
+    <Signature 
+        v-model:visible="showSignatureModal"
+        :loading="signatureLoading"
+        @close="handleSignatureClose"
+        @subscribe="handleSignatureSubscribe"
+    />
 </template>
 
 <script setup>
@@ -181,6 +188,8 @@ const step = ref('options')
 const refinedContent = ref('')
 const loading = ref(false)
 const loadingSave = ref(false)
+const showSignatureModal = ref(false)
+const signatureLoading = ref(false)
 
 const customSuggestions = [
     'Focar na hipótese diagnóstica principal',
@@ -210,6 +219,14 @@ const applyRefinement = async () => {
 
         refinedContent.value = response.content
         step.value = 'review'
+    } catch (error) {
+        const REQUIRES_PRO = error.response?.data?.requires_pro
+
+        if (REQUIRES_PRO) {
+            showSignatureModal.value = true
+        } else {
+            showError(t('notifications.titles.error'), 'Problema ao refinar anamnese. Tente novamente!', 3000)
+        }
     } finally {
         loading.value = false
     }
@@ -239,6 +256,27 @@ const acceptRefinement = async () => {
 
 const rejectRefinement = () => {
     step.value = 'options'
+}
+
+const handleSignatureClose = () => {
+    showSignatureModal.value = false
+}
+
+const handleSignatureSubscribe = async (plan) => {
+    signatureLoading.value = true
+    
+    try {
+        const { SubscriptionService } = await import('@/service/SubscriptionService')
+        
+        const response = await SubscriptionService.createCheckout(plan)
+        
+        window.location.href = response.url
+    } catch (error) {
+        console.error('Error creating subscription:', error)
+        showError(t('notifications.titles.error'), 'Erro ao iniciar assinatura. Tente novamente!', 3000)
+    } finally {
+        signatureLoading.value = false
+    }
 }
 
 </script>

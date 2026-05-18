@@ -211,6 +211,12 @@
             @close="dialogClear = false" 
             @confirm="confirmClearTranscription"
         />
+        <Signature 
+            v-model:visible="showSignatureModal"
+            :loading="signatureLoading"
+            @close="handleSignatureClose"
+            @subscribe="handleSignatureSubscribe"
+        />
     </section>
 </template>
 
@@ -223,15 +229,16 @@ import { SelectOptionsService } from '@/service/SelectOptionsService';
 import { useShowToast } from '@/utils/useShowToast';
 import { useI18n } from 'vue-i18n';
 import { useRouter, useRoute } from "vue-router";
-import api from '@/services/axios';
-import Cookies from 'js-cookie';
 import { useHelpers } from '@/utils/helper';
+import { useUserStore } from '@/stores/userStore'
+import Signature from '@/components/Modal/Signature.vue'
 
 const router = useRouter();
 const route = useRoute();
 const { t } = useI18n();
-const { showSuccess, showError } = useShowToast();
+const { showSuccess, showError, showAttention } = useShowToast();
 const { formatSize } = useHelpers();
+const userStore = useUserStore()
 
 const inputMode = ref('record')
 const chatTranscription = ref();
@@ -258,6 +265,8 @@ const form = ref({
 })
 const submitBtn = ref(null)
 const pendingInputMode = ref(null);
+const showSignatureModal = ref(false)
+const signatureLoading = ref(false)
 
 const scrollAfterRecordingStart = () => {
     nextTick(() => {
@@ -340,24 +349,40 @@ const transcribeAudio = async () => {
 
     TranscriptsService.store(formData)
         .then(response => {
-            const result = response.data;
-            transcriptId.value = result.id
+            const transcript = response.data.transcript
+            transcriptId.value = transcript.id
 
-            const processedTranscription = processDeepgramResultAndCreateChatDesign(result.conversation, selectedFile.value.name);
+            const processedTranscription = processDeepgramResultAndCreateChatDesign(transcript.conversation, selectedFile.value.name);
             
             chatTranscription.value = processedTranscription.utterances;
             transcriptions.value.unshift(processedTranscription);
 
+            setUsageOnStorage(response.data.remaining)
+
             selectedFile.value = null;
             uploader.value?.clear();
+
+            showSuccess('Sucesso', 'Transcrição gerada com sucesso!', 3000);
         })
         .catch(error => {
-            alert('Erro ao transcrever o áudio.');
+            if (error.response?.status === 429) {
+                showSignatureModal.value = true
+                showAttention('Atenção', 'Você usou todas as transcrições gratuitas', 7000);
+            } else {
+                alert('Erro ao transcrever o áudio.');
+            }
         })
         .finally(() => {
             isTranscribing.value = false;
         });
 };
+
+const setUsageOnStorage = (remaining) => {
+    if(remaining == null) return;
+
+    userStore.remaining = remaining
+    localStorage.setItem('remaining',  remaining)
+}
 
 const transcribeAndGenerateDocument = async () => {
     if (!validateForm()) return;
@@ -378,12 +403,21 @@ const transcribeAndGenerateDocument = async () => {
         const result = response.data;
 
         if (result) {
+            setUsageOnStorage(response.data.remaining)
+
             loadingTranscribeAndGenerate.value = false
-            redirectTo(result.transcript_id);
+            showSuccess('Sucesso', 'Documento gerado com sucesso!', 3000);
+            
+            redirectTo(result.document.transcript_id);
         }
     } catch (error) {
         loadingTranscribeAndGenerate.value = false
-        alert('Erro ao transcrever o áudio.');
+        if (error.response?.status === 429) {
+            showSignatureModal.value = true
+            showAttention('Atenção', 'Você usou todas as transcrições gratuitas', 7000);
+        } else {
+            alert('Erro ao transcrever o áudio.');
+        }
     }
 };
 
@@ -529,6 +563,27 @@ async function loadTypes() {
         console.error(error)
     } finally {
         loadingTypes.value = false
+    }
+}
+
+const handleSignatureClose = () => {
+    showSignatureModal.value = false
+}
+
+const handleSignatureSubscribe = async (plan) => {
+    signatureLoading.value = true
+    
+    try {
+        const { SubscriptionService } = await import('@/service/SubscriptionService')
+        
+        const response = await SubscriptionService.createCheckout(plan)
+        
+        window.location.href = response.url
+    } catch (error) {
+        console.error('Error creating subscription:', error)
+        showError(t('notifications.titles.error'), 'Erro ao iniciar assinatura. Tente novamente!', 3000)
+    } finally {
+        signatureLoading.value = false
     }
 }
 

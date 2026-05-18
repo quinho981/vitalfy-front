@@ -2,7 +2,17 @@
     <div class="card w-full md:w-1/2 flex flex-col">
         <div class="flex items-center gap-2">
             <FileAudio2 :size="20" />
-            <p class="font-semibold text-xl mb-4">Transcrição da consulta</p>
+            <p class="font-semibold text-xl">Transcrição da consulta</p>
+            <button
+                v-tooltip.top="{
+                    value: `<span class='text-sm'>Para obter transcrições mais precisas e organizadas, grave apenas as informações relevantes da anamnese. Pause ou finalize a gravação ao encerrar essa etapa da consulta.</span>`,
+                    escape: false,
+                    showDelay: 300
+                }"
+                class=" text-gray-400 transition"
+            >
+                <HelpCircle :size="15" />
+            </button>
         </div>
         <p class="mt-1 text-slate-500 dark:text-slate-300 mb-3">Texto transcrito automaticamente pela IA</p>
         <div class="p-2 h-full w-full rounded-lg border-[1px] border-surface dark:border-surface flex flex-col gap-y-2 xl:min-h-[350px] xl:max-h-[470px] overflow-y-auto transcript-box">
@@ -128,7 +138,7 @@
 
 <script setup>
 import { ref, watch, nextTick, computed } from 'vue';
-import { FileAudio2, FileChartColumn, Loader2 } from 'lucide-vue-next';
+import { FileAudio2, FileChartColumn, Loader2, HelpCircle } from 'lucide-vue-next';
 import Skeleton from 'primevue/skeleton';
  
 const emit = defineEmits(['clear', 'finish']);

@@ -1,11 +1,11 @@
 <template>
-    <div class="w-full bg-gray-100 dark:bg-zinc-900 rounded-lg p-1 flex mb-3">
+    <div class="w-full bg-surface-100 dark:bg-surface-800 rounded-lg p-1 flex">
         <button
             @click="update('record')"
             class="flex-1 py-2 rounded-md text-sm font-medium transition-all duration-200"
             :class="isRecordMode
-                ? 'bg-white dark:bg-zinc-700 text-gray-800 dark:text-slate-100 shadow-sm'
-                : 'text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'"
+                ? 'bg-white dark:bg-surface-700 text-surface-800 dark:text-surface-200 shadow-sm'
+                : 'text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-300'"
         >
             Gravar áudio
         </button>
@@ -14,8 +14,8 @@
             @click="update('upload')"
             class="flex-1 py-2 rounded-md text-sm font-medium transition-all duration-200"
             :class="!isRecordMode
-                ? 'bg-white dark:bg-zinc-700 text-gray-800 dark:text-slate-100 shadow-sm'
-                : 'text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'"
+                ? 'bg-white dark:bg-surface-700 text-surface-800 dark:text-surface-200 shadow-sm'
+                : 'text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-300'"
         >
             Enviar áudio
         </button>

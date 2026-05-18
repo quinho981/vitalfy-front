@@ -5,7 +5,7 @@
             <p class="my-1 text-lg text-surface-500">Grave ou envie o áudio da consulta para gerar automaticamente o documento clínico e os insights</p>
         </div>
         <div class="flex gap-x-4 flex-wrap md:flex-nowrap">
-            <div class="card w-full md:w-1/2 flex flex-col mb-5 md:mb-0">
+            <div class="card w-full md:w-1/2 flex flex-col gap-y-4 mb-5 md:mb-0">
                 <SelectButtonMode 
                     :modelValue="inputMode"
                     @changeInputMode="confirmInputModeChangeIfFileSelected"
@@ -14,19 +14,19 @@
                 <RecordCardTitle v-if="isRecordMode()" />
                 <UploadCardTitle v-if="!isRecordMode()" />
 
-                <div class="flex flex-col">
+                <div class="flex flex-col gap-y-3">
                     <div>
                         <div class="flex gap-x-1">
-                            <label class="mb-1" for="name">Nome do Paciente<span class="text-red-500">*</span></label>
+                            <label class="mb-1 text-sm font-medium text-surface-700 dark:text-surface-300" for="name">Nome do Paciente<span class="text-red-500">*</span></label>
                         </div>
                         <InputText id="name" v-model="form.patient" type="text" class="w-full" maxlength="254" placeholder="Digite o nome do paciente..." :class="{ 'p-invalid': errorMessagePatient }" />
                         <small v-if="errorMessagePatient" class="text-red-500">
                             {{ errorMessagePatient }}
                         </small>
                     </div>
-                    <div class="flex gap-4 flex-wrap xl:flex-nowrap mt-2 mb-5">
+                    <div class="flex gap-4 flex-wrap xl:flex-nowrap">
                         <div class="w-full">
-                            <label class=" mb-1" for="template">Template<span class="text-red-500">*</span></label>
+                            <label class="mb-1 text-sm font-medium text-surface-700 dark:text-surface-300" for="template">Template<span class="text-red-500">*</span></label>
                             <Select 
                                 id="template" 
                                 v-model="form.template_id" 
@@ -41,7 +41,7 @@
                             />
                         </div>
                         <div class="w-full">
-                            <label class=" mb-1" for="type">Tipo de atendimento<span class="text-red-500">*</span></label>
+                            <label class="mb-1 text-sm font-medium text-surface-700 dark:text-surface-300" for="type">Tipo de atendimento<span class="text-red-500">*</span></label>
                             <Select 
                                 id="type" 
                                 v-model="form.type_id" 
@@ -76,38 +76,36 @@
                                 <div 
                                     v-for="(file) of files" 
                                     :key="file.name + file.type + file.size"
-                                    class="group flex items-center justify-between gap-4 p-4 rounded-2xl 
-                                        bg-white/70 backdrop-blur-md border border-slate-200
-                                        shadow-sm hover:shadow-md transition-all duration-300 dark:bg-neutral-700/70 dark:border-neutral-700"
+                                    class="group flex items-center justify-between gap-4 p-4 rounded-lg 
+                                        bg-surface-50 border border-surface-200
+                                        hover:border-blue-300 hover:bg-surface-100 transition-all duration-200 dark:bg-surface-800 dark:border-surface-700 dark:hover:border-blue-600 dark:hover:bg-surface-700"
                                 >
                                     <div class="flex items-center gap-4 flex-1 min-w-0">
-                                        <div class="flex items-center justify-center w-12 h-12 rounded-xl 
-                                                    bg-gradient-to-br from-blue-500 to-indigo-600 
-                                                    text-white shadow-md">
-                                            <FileVolume size="22"/>
+                                        <div class="flex items-center justify-center w-10 h-10 rounded-lg 
+                                                    bg-blue-50 dark:bg-blue-950">
+                                            <FileVolume size="18" class="text-blue-600 dark:text-blue-400"/>
                                         </div>
 
                                         <div class="flex flex-col min-w-0">
-                                            <span class="font-semibold text-sm sm:text-base truncate text-slate-800 dark:text-slate-300">
+                                            <span class="font-semibold text-sm truncate text-surface-800 dark:text-surface-200">
                                                 {{ file.name }}
                                             </span>
-                                            <span class="text-xs text-slate-500 dark:text-slate-400">
+                                            <span class="text-xs text-surface-500 dark:text-surface-400">
                                                 {{ formatSize(file.size) }}
                                             </span>
                                         </div>
 
-                                        <span class="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-600 font-medium dark:bg-blue-500/20 dark:text-blue-400">
+                                        <span class="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-600 font-medium dark:bg-blue-950 dark:text-blue-400">
                                             {{ file.type.split('/')[1] || 'audio' }}
                                         </span>
                                     </div>
 
                                     <button 
                                         @click="removeFile"
-                                        class="
-                                            w-9 h-9 flex items-center justify-center rounded-lg
-                                            hover:bg-red-50 text-red-500 dark:hover:bg-red-900 transition"
+                                        class="w-8 h-8 flex items-center justify-center rounded-lg
+                                            hover:bg-red-50 text-red-500 dark:hover:bg-red-950 dark:text-red-400 transition-colors"
                                     >
-                                        <i class="pi pi-times"></i>
+                                        <i class="pi pi-times text-sm"></i>
                                     </button>
                                 </div>
                             </div>
@@ -116,33 +114,29 @@
                             <div 
                                 @click="openFileDialog"
                                 class="group relative flex flex-col items-center justify-center text-center
-                                    p-8 rounded-2xl border-2 border-dashed border-slate-300
-                                    bg-gradient-to-br from-white to-slate-50
-                                    hover:border-blue-400 hover:bg-blue-50/40
-                                    transition-all duration-300 cursor-pointer 
-                                    dark:bg-gradient-to-br dark:from-neutral-800 dark:to-neutral-900 
-                                    dark:border-neutral-700 dark:hover:border-blue-500"
+                                    p-8 rounded-lg border-2 border-dashed border-surface-300
+                                    bg-surface-50
+                                    hover:border-blue-400 hover:bg-blue-50/50
+                                    transition-all duration-200 cursor-pointer 
+                                    dark:bg-surface-800 dark:border-surface-700 
+                                    dark:hover:border-blue-500 dark:hover:bg-blue-950/30"
                             >
-                                <div class="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 
-                                            bg-blue-500/5 blur-xl transition"></div>
-
-                                <div class="flex items-center justify-center w-14 h-14 rounded-2xl
-                                            bg-blue-100 text-blue-600 mb-4
-                                            group-hover:scale-105 transition dark:bg-blue-500/20 dark:text-blue-400">
-                                    <Upload size="24"/>
+                                <div class="flex items-center justify-center w-12 h-12 rounded-lg
+                                            bg-blue-50 text-blue-600 mb-4
+                                            group-hover:scale-105 transition dark:bg-blue-950 dark:text-blue-400">
+                                    <Upload size="20"/>
                                 </div>
 
-                                <p class="text-base font-medium text-slate-700 dark:text-slate-300">
+                                <p class="text-sm font-medium text-surface-700 dark:text-surface-300">
                                     Arraste seu áudio aqui
                                 </p>
-                                <p class="text-sm text-slate-500 dark:text-slate-400">
+                                <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
                                     ou clique para selecionar um arquivo
                                 </p>
 
-                                <div class="mt-3 px-5 py-2 rounded-md text-sm font-medium
-                                            bg-blue-600 text-white shadow-sm
-                                            group-hover:shadow-md group-hover:scale-[1.02]
-                                            transition">
+                                <div class="mt-4 px-4 py-2 rounded-lg text-sm font-medium
+                                            bg-blue-600 text-white hover:bg-blue-700
+                                            transition-colors">
                                     Selecionar arquivo
                                 </div>
                             </div>
@@ -155,24 +149,26 @@
                         @recording-started="scrollAfterRecordingStart"
                     />
                     
-                    <div class="flex justify-end mt-3 gap-x-1">
+                    <div class="flex justify-end gap-x-2">
                         <Button
                             ref="submitBtn"
                             @click="transcribeAudio"
                             :disabled="!selectedFile || isTranscribing || loadingTranscribeAndGenerate"
-                            class="!border !border-blue-500 mr-2 !text-blue-500 !bg-white !rounded-lg font-semibold hover:!bg-blue-100 duration-300 dark:!border-2 dark:!bg-neutral-800 dark:hover:!bg-neutral-700 "
+                            outlined
+                            severity="secondary"
+                            class="!border-blue-500 !text-blue-500 !bg-white !rounded-lg font-semibold hover:!bg-blue-50 dark:!bg-surface-800 dark:hover:!bg-surface-700"
                         >
-                            <Loader2 v-if="isTranscribing" :size="17" class="animate-spin mr-2" />
-                            <MessagesSquare v-else :size="17" class="mr-1" />
+                            <Loader2 v-if="isTranscribing" :size="16" class="animate-spin mr-2" />
+                            <MessagesSquare v-else :size="16" class="mr-1" />
                             {{ isTranscribing ? 'Transcrevendo...' : 'Transcrever' }}
                         </Button>
                         <Button
                             @click="transcribeAndGenerateDocument"
                             :disabled="!selectedFile || isTranscribing || loadingTranscribeAndGenerate"
-                            class="!bg-gradient-to-br !from-blue-500 !to-blue-700 !border-none !text-white !rounded-lg font-semibold hover:!from-blue-600 hover:!to-blue-800 duration-300"
+                            class="!bg-gradient-to-br !from-blue-500 !to-blue-700 !border-none !text-white !rounded-lg font-semibold hover:!from-blue-600 hover:!to-blue-800"
                         >
-                            <Loader2 v-if="loadingTranscribeAndGenerate" :size="17" class="animate-spin mr-2" />
-                            <FilePlus v-else :size="17" />
+                            <Loader2 v-if="loadingTranscribeAndGenerate" :size="16" class="animate-spin mr-2" />
+                            <FilePlus v-else :size="16" class="mr-1" />
                             {{ loadingTranscribeAndGenerate ? 'Transcrevendo...' : 'Transcrever e gerar documento' }}
                         </Button>
                         <button
@@ -182,7 +178,7 @@
                                 escape: false,
                                 showDelay: 300
                             }"
-                            class="flex items-center justify-center rounded-full border-none text-gray-400 transition"
+                            class="flex items-center justify-center rounded-full border-none text-surface-400 hover:text-surface-600 dark:text-surface-500 dark:hover:text-surface-300 transition-colors"
                         >
                             <HelpCircle :size="15" />
                         </button>
@@ -502,7 +498,7 @@ const validateForm = () => {
     }
 
     if (!form.value.patient) {
-        errorMessagePatient.value = true
+        errorMessagePatient.value = 'O nome do paciente é obrigatório.'
         isValid = false
     } else if (form.value.patient.length > 255) {
         errorMessagePatient.value = 'O nome do paciente deve ter no máximo 255 caracteres.'
@@ -594,30 +590,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.custom-uploader .p-fileupload-content {
-  padding: 0 !important;
-  background: none;
-  box-shadow: none;
-  border: none !important;
-}
-.upload-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 220px;
-  border: 2px dashed #ccc;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: border-color .2s;
-}
-.upload-text {
-  text-align: center;
-  color: #666;
-  margin-bottom: 1rem;
-  line-height: 1.4;
-  font-size: 0.9rem;
-}
 ::v-deep(.p-fileupload-header) {
     padding: 0 !important;
     margin: 0 !important;
@@ -630,15 +602,5 @@ onMounted(() => {
 }
 ::v-deep(.p-fileupload-advanced) {
     border: none !important;
-}
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <div ref="recorderRef" class="w-full bg-white dark:bg-neutral-900 border-2 border-dashed border-slate-300 dark:border-neutral-700 rounded-2xl p-6 flex flex-col gap-0">
+    <div ref="recorderRef" class="w-full bg-surface-50 dark:bg-surface-800 border-2 border-dashed border-surface-300 dark:border-surface-700 rounded-lg p-6 flex flex-col gap-0">
         <div 
             class="flex items-center justify-between"
             :class="!recording && !audioUrl ? 'mb-3' : 'mb-5'"
@@ -11,10 +11,10 @@
                         'bg-red-500 animate-pulse': recording && !isPaused,
                         'bg-yellow-500': isPaused,
                         'bg-emerald-500': audioUrl && !recording,
-                        'bg-neutral-300 dark:bg-neutral-600': !recording && !audioUrl
+                        'bg-surface-300 dark:bg-surface-600': !recording && !audioUrl
                     }"
                 />
-                <span class="text-xs font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
+                <span class="text-xs font-medium uppercase tracking-widest text-surface-400 dark:text-surface-500">
                     {{ stateLabel }}
                 </span>
             </div>
@@ -24,7 +24,7 @@
                     'bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800': recording && !isPaused,
                     'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-400 dark:border-yellow-800': isPaused,
                     'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800': audioUrl && !recording,
-                    'bg-neutral-100 text-neutral-400 border-neutral-200 dark:bg-neutral-800 dark:text-neutral-500 dark:border-neutral-700': !recording && !audioUrl
+                    'bg-surface-100 text-surface-400 border-surface-200 dark:bg-surface-700 dark:text-surface-500 dark:border-surface-600': !recording && !audioUrl
                 }"
             >
                 {{ badgeLabel }}
@@ -35,17 +35,17 @@
             class="flex items-baseline gap-1.5"
             :class="!recording && !audioUrl ? 'mb-0' : 'mb-5'"    
         >
-            <span class="font-robotomono text-5xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 leading-none tabular-nums">
+            <span class="font-robotomono text-5xl font-semibold tracking-tight text-surface-900 dark:text-surface-100 leading-none tabular-nums">
                 {{ formatTime(timer) }}
             </span>
-            <span class="font-mono text-sm text-neutral-400 dark:text-neutral-500">
+            <span class="font-mono text-sm text-surface-400 dark:text-surface-500">
                 {{ timer >= 60 ? 'min' : 'seg' }}
             </span>
         </div>
 
         <div
             v-if="recording || audioUrl" 
-            class="w-full h-14 rounded-xl bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center gap-[3px] px-3 overflow-hidden mb-6"
+            class="w-full h-14 rounded-lg bg-surface-100 dark:bg-surface-700 border border-surface-200 dark:border-surface-600 flex items-center justify-center gap-[3px] px-3 overflow-hidden mb-6"
         >
             <div
                 v-for="(bar, i) in bars"
@@ -54,7 +54,7 @@
                 :class="{
                     'bg-blue-500 dark:bg-blue-400': recording && !isPaused,
                     'bg-yellow-400': isPaused,
-                    'bg-neutral-300 dark:bg-neutral-600': !recording && !isPaused
+                    'bg-surface-300 dark:bg-surface-600': !recording && !isPaused
                 }"
                 :style="{ height: Math.min(Math.max(bar * 1.1, 4), 48) + 'px' }"
             />
@@ -63,7 +63,7 @@
         <div class="flex items-center justify-center gap-3 mb-4">
             <button
                 v-if="!recording && !audioUrl"
-                class="w-16 h-16 rounded-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white flex items-center justify-center shadow-md shadow-blue-200 dark:shadow-blue-900 transition-all duration-150"
+                class="w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white flex items-center justify-center shadow-md shadow-blue-200 dark:shadow-blue-900 transition-all duration-200"
                 v-tooltip.top="'Iniciar gravação'"
                 @click="startRecording"
             >
@@ -73,7 +73,7 @@
             <template v-else-if="recording">
                 <button
                     v-if="!isPaused"
-                    class="w-11 h-11 rounded-full bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 border border-neutral-200 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 active:scale-95 flex items-center justify-center transition-all duration-150"
+                    class="w-10 h-10 rounded-full bg-surface-100 hover:bg-surface-200 dark:bg-surface-700 dark:hover:bg-surface-600 border border-surface-200 dark:border-surface-600 text-surface-500 dark:text-surface-400 active:scale-95 flex items-center justify-center transition-all duration-200"
                     v-tooltip.top="'Pausar gravação'"
                     @click="pauseRecording"
                 >
@@ -81,14 +81,14 @@
                 </button>
                 <button
                     v-else
-                    class="w-11 h-11 rounded-full bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 border border-neutral-200 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 active:scale-95 flex items-center justify-center transition-all duration-150"
+                    class="w-10 h-10 rounded-full bg-surface-100 hover:bg-surface-200 dark:bg-surface-700 dark:hover:bg-surface-600 border border-surface-200 dark:border-surface-600 text-surface-500 dark:text-surface-400 active:scale-95 flex items-center justify-center transition-all duration-200"
                     v-tooltip.top="'Retomar gravação'"
                     @click="resumeRecording"
                 >
                     <Play :size="18" />
                 </button>
                 <button
-                    class="w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white flex items-center justify-center shadow-md shadow-blue-200 dark:shadow-blue-900 transition-all duration-150"
+                    class="w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white flex items-center justify-center shadow-md shadow-blue-200 dark:shadow-blue-900 transition-all duration-200"
                     v-tooltip.top="'Concluir gravação'"
                     @click="stopRecording"
                 >
@@ -98,7 +98,7 @@
 
             <button
                 v-else-if="audioUrl"
-                class="inline-flex items-center gap-2 h-9 px-4 rounded-lg bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 border border-neutral-200 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 text-sm font-medium active:scale-95 transition-all duration-150"
+                class="inline-flex items-center gap-2 h-9 px-4 rounded-lg bg-surface-100 hover:bg-surface-200 dark:bg-surface-700 dark:hover:bg-surface-600 border border-surface-200 dark:border-surface-600 text-surface-500 dark:text-surface-400 text-sm font-medium active:scale-95 transition-all duration-200"
                 @click="resetRecorder"
             >
                 <Mic :size="14" />
@@ -106,15 +106,15 @@
             </button>
         </div>
 
-        <p v-if="!recording" class="text-center text-xs transition-colors duration-300" :class="audioUrl ? 'text-emerald-600 dark:text-emerald-400' : 'text-neutral-400 dark:text-neutral-500'">
+        <p v-if="!recording" class="text-center text-xs transition-colors duration-300" :class="audioUrl ? 'text-emerald-600 dark:text-emerald-400' : 'text-surface-400 dark:text-surface-500'">
             {{ audioUrl ? 'Gravação salva com sucesso' : 'Clique para iniciar a gravação de áudio' }}
         </p>
 
         <template v-if="audioUrl">
-            <div class="w-full h-px bg-neutral-100 dark:bg-neutral-800 my-4" />
+            <div class="w-full h-px bg-surface-200 dark:bg-surface-700 my-4" />
                 <div class="w-full">
                     <div class="flex items-center justify-between mb-2.5">
-                        <p class="text-[11px] font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500">Gravação</p>
+                        <p class="text-[11px] font-medium uppercase tracking-widest text-surface-400 dark:text-surface-500">Gravação</p>
                         <a
                             :href="audioUrl"
                             :download="`gravacao-${Date.now()}.webm`"
@@ -125,17 +125,17 @@
                             Baixar
                         </a>
                     </div>
-                    <div class="flex items-center gap-3 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl px-3.5 py-3">
+                    <div class="flex items-center gap-3 bg-surface-100 dark:bg-surface-700 border border-surface-200 dark:border-surface-600 rounded-lg px-3.5 py-3">
                         <audio ref="audioRef" :src="audioUrl" @timeupdate="onTimeUpdate" @loadedmetadata="onMetadata" @ended="isPlaying = false" />
                         <button
-                            class="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white flex items-center justify-center flex-shrink-0 transition-all duration-150"
+                            class="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white flex items-center justify-center flex-shrink-0 transition-all duration-200"
                             @click="togglePlay"
                         >
                             <component :is="isPlaying ? Pause : Play" :size="14" />
                         </button>
                         <div class="flex flex-col gap-1.5 flex-1 min-w-0">
                             <div
-                                class="h-[3px] bg-neutral-200 dark:bg-neutral-700 rounded-full cursor-pointer relative"
+                                class="h-[3px] bg-surface-200 dark:bg-surface-600 rounded-full cursor-pointer relative"
                                 @click="seek"
                             >
                             <div
@@ -143,7 +143,7 @@
                                 :style="{ width: playbackProgress + '%' }"
                             />
                         </div>
-                        <div class="flex justify-between font-mono text-[11px] text-neutral-400 dark:text-neutral-500 tabular-nums">
+                        <div class="flex justify-between font-mono text-[11px] text-surface-400 dark:text-surface-500 tabular-nums">
                             <span>{{ formatTime(Math.round(currentTime)) }}</span>
                             <span>{{ formatTime(Math.round(duration)) }}</span>
                         </div>

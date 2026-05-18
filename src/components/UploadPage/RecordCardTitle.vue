@@ -1,10 +1,12 @@
 <template>
-    <div class="mb-3">
-        <div class="flex items-center gap-2">
-            <AudioLines :size="20"  />
-            <p class="font-semibold text-lg">Gravar áudio</p>
+    <div class="flex items-center gap-x-3 mb-3">
+        <div class="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0 dark:bg-purple-950">
+            <AudioLines :size="17" class="text-purple-600 dark:text-purple-400" />
         </div>
-        <p class="text-slate-500 dark:text-slate-300">Controle a gravação da consulta</p>
+        <div>
+            <p class="text-sm font-semibold text-surface-800 dark:text-surface-200">Gravar áudio</p>
+            <p class="text-xs text-surface-400 mt-0.5">Controle a gravação da consulta</p>
+        </div>
     </div>
 </template>
 

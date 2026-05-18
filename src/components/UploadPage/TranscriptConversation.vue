@@ -1,30 +1,34 @@
 <template>
-    <div class="card w-full md:w-1/2 flex flex-col">
-        <div class="flex items-center gap-2">
-            <FileAudio2 :size="20" />
-            <p class="font-semibold text-xl">Transcrição da consulta</p>
+    <div class="card w-full md:w-1/2 flex flex-col gap-y-3">
+        <div class="flex items-center gap-x-3">
+            <div class="w-9 h-9 rounded-lg bg-teal-50 flex items-center justify-center flex-shrink-0 dark:bg-teal-950">
+                <FileAudio2 :size="17" class="text-teal-600 dark:text-teal-400" />
+            </div>
+            <div>
+                <p class="text-sm font-semibold text-surface-800 dark:text-surface-200">Transcrição da consulta</p>
+                <p class="text-xs text-surface-400 mt-0.5">Texto transcrito automaticamente pela IA</p>
+            </div>
             <button
                 v-tooltip.top="{
                     value: `<span class='text-sm'>Para obter transcrições mais precisas e organizadas, grave apenas as informações relevantes da anamnese. Pause ou finalize a gravação ao encerrar essa etapa da consulta.</span>`,
                     escape: false,
                     showDelay: 300
                 }"
-                class=" text-gray-400 transition"
+                class="flex items-center justify-center rounded-full border-none text-surface-400 hover:text-surface-600 dark:text-surface-500 dark:hover:text-surface-300 transition-colors"
             >
                 <HelpCircle :size="15" />
             </button>
         </div>
-        <p class="mt-1 text-slate-500 dark:text-slate-300 mb-3">Texto transcrito automaticamente pela IA</p>
-        <div class="p-2 h-full w-full rounded-lg border-[1px] border-surface dark:border-surface flex flex-col gap-y-2 xl:min-h-[350px] xl:max-h-[470px] overflow-y-auto transcript-box">
+        <div class="p-3 h-full w-full rounded-lg border border-surface-200 dark:border-surface-700 dark:bg-surface-800 flex flex-col gap-y-2 xl:min-h-[350px] xl:max-h-[470px] overflow-y-auto">
             <div 
                 v-if="transcriptions.length === 0 && !isTranscribing && !loadingTranscribeAndGenerate" 
                 class="flex items-center justify-center h-full"
             >
-                <p class="text-slate-400 text-center">Clique em <strong>Transcrever</strong> para visualizar o texto da consulta aqui,<br> ou em <strong>Transcrever e gerar documento</strong> para criar o documento completo automaticamente.</p>
+                <p class="text-sm text-surface-400 text-center">Clique em <strong>Transcrever</strong> para visualizar o texto da consulta aqui,<br> ou em <strong>Transcrever e gerar documento</strong> para criar o documento completo automaticamente.</p>
             </div>
 
-            <div v-if="isTranscribing" class="flex flex-col gap-5 px-2 py-4 animate-[fadeUp_0.4s_ease]">
-                <div class="flex items-center gap-3 px-4 py-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/50 rounded-xl">
+            <div v-if="isTranscribing" class="flex flex-col gap-4 px-2 py-4 animate-[fadeUp_0.4s_ease]">
+                <div class="flex items-center gap-3 px-4 py-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/50 rounded-lg">
                     <div class="flex items-center gap-[3px] h-9 shrink-0">
                         <span
                             v-for="i in 10" :key="i"
@@ -47,7 +51,7 @@
             </div>
             
             <div v-if="loadingTranscribeAndGenerate" class="flex flex-col gap-4 px-2 py-4 animate-[fadeUp_0.4s_ease]">
-                <div class="flex items-center gap-3 px-4 py-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/50 rounded-xl">
+                <div class="flex items-center gap-3 px-4 py-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/50 rounded-lg">
                     <div class="flex flex-col gap-0.5">
                         <p class="text-[12.5px] font-semibold text-blue-800 dark:text-blue-300">
                             Preparando o resultado da consulta
@@ -72,7 +76,7 @@
                             :class="{
                                 'bg-blue-600 text-white scale-110 shadow-sm': index === currentStepIndex,
                                 'bg-blue-500 text-white': index < currentStepIndex,
-                                'bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300 opacity-70': index > currentStepIndex
+                                'bg-surface-300 dark:bg-surface-600 text-surface-600 dark:text-surface-300 opacity-70': index > currentStepIndex
                             }"
                         >
                             <span v-if="index < currentStepIndex" class="text-[12px]">✓</span>
@@ -83,7 +87,7 @@
                             class="mb-2"
                             :class="{
                                 'text-blue-700 dark:text-blue-300 font-medium': index === currentStepIndex,
-                                'text-gray-500 opacity-70': index > currentStepIndex
+                                'text-surface-500 opacity-70': index > currentStepIndex
                             }"
                         >
                             {{ step.label }}
@@ -95,41 +99,41 @@
             <div v-for="(transcription, index) in transcriptions" :key="index" class="transcription-item">
                 <div class="flex items-center gap-2 mb-3">
                     <FileAudio2 :size="16" class="text-blue-500" />
-                    <span class="font-semibold text-sm text-gray-700 dark:text-gray-300">{{ transcription.fileName }}</span>
-                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ transcription.timestamp }}</span>
+                    <span class="font-semibold text-sm text-surface-700 dark:text-surface-300">{{ transcription.fileName }}</span>
+                    <span class="text-xs text-surface-500 dark:text-surface-400">{{ transcription.timestamp }}</span>
                 </div>
 
                 <div v-for="(utterance, uttIndex) in transcription.utterances" :key="uttIndex" class="mb-2">
                     <div class="rounded-lg p-2">
-                        <div class="flex items-start mb-2">
+                        <div class="flex items-start mb-1">
                             <div>
                                 <div class="flex items-center gap-2 ">
-                                    <span class="text-xs text-gray-500 dark:text-gray-300">{{ utterance.start }}s</span>
+                                    <span class="text-xs text-surface-500 dark:text-surface-400">{{ utterance.start }}s</span>
                                 </div>
-                                <p class="text-gray-800 p-2 rounded-lg bg-surface-100 dark:bg-neutral-700 dark:text-slate-300">{{ utterance.text }}</p>
+                                <p class="text-surface-800 p-2 rounded-lg bg-surface-100 dark:bg-surface-700 dark:text-surface-200">{{ utterance.text }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div ref="bottomAnchor" v-show="transcriptions.length != 0 && !isTranscribing" class="flex justify-end mt-4">
+        <div ref="bottomAnchor" v-show="transcriptions.length != 0 && !isTranscribing" class="flex justify-end gap-x-2">
             <Button
                 icon="pi pi-trash"
                 label="Limpar"
                 outlined
                 severity="danger"
-                class="mr-3 dark:hover:!bg-red-950"
+                class="dark:hover:!bg-red-950"
                 @click="emit('clear')"
                 :disabled="loadingFinish"
             />
             <Button
                 @click="emit('finish')"
                 :disabled="loadingFinish"
-                class="!bg-gradient-to-br !from-blue-500 !to-blue-700 !border-none !text-white !rounded-lg font-semibold hover:!from-blue-600 hover:!to-blue-800 duration-300"
+                class="!bg-gradient-to-br !from-blue-500 !to-blue-700 !border-none !text-white !rounded-lg font-semibold hover:!from-blue-600 hover:!to-blue-800"
             >
-                <Loader2 v-if="loadingFinish" :size="17" class="animate-spin mr-2" />
-                <FileChartColumn v-else :size="17" />
+                <Loader2 v-if="loadingFinish" :size="16" class="animate-spin mr-2" />
+                <FileChartColumn v-else :size="16" class="mr-2" />
                 Finalizar e gerar insights
             </Button>
         </div>

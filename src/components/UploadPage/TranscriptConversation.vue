@@ -132,15 +132,12 @@
             </div>
         </div>
         <div ref="bottomAnchor" v-show="transcriptions.length != 0 && !isTranscribing" class="flex justify-end gap-x-2">
-            <Button
-                icon="pi pi-trash"
-                label="Limpar"
-                outlined
-                severity="danger"
-                class="dark:hover:!bg-red-950"
+            <button
                 @click="emit('clear')"
-                :disabled="loadingFinish"
-            />
+                class="flex items-center px-4 py-2 border rounded-lg hover:bg-gray-100 transition dark:hover:bg-neutral-700 dark:border-neutral-600 dark:text-gray-300"
+            >
+                <Trash :size="15" class="mr-1" /> Limpar
+            </button>
             <Button
                 @click="emit('finish')"
                 :disabled="loadingFinish"
@@ -156,7 +153,7 @@
 
 <script setup>
 import { ref, watch, nextTick, computed } from 'vue';
-import { FileAudio2, FileChartColumn, Loader2, HelpCircle } from 'lucide-vue-next';
+import { FileAudio2, FileChartColumn, Loader2, HelpCircle, Trash } from 'lucide-vue-next';
 import Skeleton from 'primevue/skeleton';
  
 const emit = defineEmits(['clear', 'finish']);

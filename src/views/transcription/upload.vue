@@ -555,6 +555,7 @@ async function loadTypes() {
     loadingTypes.value = true
     try {
         dropdownTypes.value = await SelectOptionsService.getTypesMinimal()
+        form.value.type_id = Number(localStorage.getItem("favoriteType")) || null
     } catch (error) {
         console.error(error)
     } finally {

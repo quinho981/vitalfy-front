@@ -230,6 +230,7 @@ import { Upload, FileVolume, Loader2, FilePlus, MessagesSquare, HelpCircle } fro
 import { AnamneseService } from '@/service/AnamneseService';
 import { TranscriptsService } from '@/service/TranscriptsService';
 import { SelectOptionsService } from '@/service/SelectOptionsService';
+import { UserService } from '@/service/UserService'
 import { useShowToast } from '@/utils/useShowToast';
 import { useI18n } from 'vue-i18n';
 import { useRouter, useRoute } from "vue-router";
@@ -591,8 +592,14 @@ const handleSignatureSubscribe = async (plan) => {
     }
 }
 
-const onTourComplete = () => {
-    console.log('Tour completed');
+const onTourComplete = async () => {
+    try {
+        await UserService.update({ recording_tour_completed: true });
+
+        userStore.recordingTourCompleted = true;
+    } catch (error) {
+        console.error('Error updating tour completion:', error);
+    }
 };
 
 onMounted(() => {

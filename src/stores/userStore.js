@@ -11,6 +11,7 @@ export const useUserStore = defineStore('user', () => {
     const plan = ref(Cookies.get('plan') || null)
     const active = ref(Cookies.get('active') || null)
     const remaining = ref(localStorage.getItem('remaining') || null)
+    const recordingTourCompleted = ref(localStorage.getItem('recording_tour_completed') === 'true')
 
     const getUserInfo = async () => {
         const token = Cookies.get('token')
@@ -26,6 +27,7 @@ export const useUserStore = defineStore('user', () => {
             plan.value = response.data.plan.name
             active.value = response.data.plan.name !== 'Free'
             remaining.value = response.data.remaining
+            recordingTourCompleted.value = response.data.user.recording_tour_completed || false
 
             Cookies.set('id', userId.value)
             Cookies.set('username', username.value)
@@ -34,6 +36,7 @@ export const useUserStore = defineStore('user', () => {
             Cookies.set('plan', plan.value)
             Cookies.set('active', active.value)
             localStorage.setItem('remaining', remaining.value)
+            localStorage.setItem('recording_tour_completed', recordingTourCompleted.value)
 
             return response.data
         } catch (error) {
@@ -49,6 +52,7 @@ export const useUserStore = defineStore('user', () => {
         plan.value = null
         active.value = null
         remaining.value = null
+        recordingTourCompleted.value = false
     }
 
     return {
@@ -59,6 +63,7 @@ export const useUserStore = defineStore('user', () => {
         plan,
         active,
         remaining,
+        recordingTourCompleted,
         getUserInfo,
         reset
     }

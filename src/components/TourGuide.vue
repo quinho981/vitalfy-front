@@ -19,6 +19,9 @@ import { onMounted, onUnmounted } from 'vue';
 import Shepherd from 'shepherd.js';
 import 'shepherd.js/dist/css/shepherd.css';
 import { HelpCircle } from 'lucide-vue-next';
+import { useUserStore } from '@/stores/userStore'
+
+const userStore = useUserStore()
 
 const props = defineProps({
     tourType: {
@@ -44,8 +47,8 @@ const tourSteps = {
         {
             id: 'recording-start',
             target: '.recorder-container',
-            title: 'Bem-vindo ao Gravador de Áudio',
-            text: 'Aqui você pode gravar suas consultas médicas de forma simples e rápida. Clique no botão do microfone para começar.',
+            title: 'Bem-vindo à Vitalfy',
+            text: 'A Vitalfy transforma o áudio da sua consulta em transcrições, documentos clínicos e insights automaticamente. Vamos mostrar como funciona.',
             attachTo: {
                 element: '.recorder-container',
                 on: 'bottom'
@@ -60,8 +63,8 @@ const tourSteps = {
         {
             id: 'recording-timer',
             target: '.timer-display',
-            title: 'Timer de Gravação',
-            text: 'O timer mostra o tempo decorrido da gravação. Você pode pausar e retomar a gravação a qualquer momento.',
+            title: 'Acompanhe a gravação',
+            text: 'O tempo da consulta é exibido em tempo real durante toda a gravação.',
             attachTo: {
                 element: '.timer-display',
                 on: 'top'
@@ -80,8 +83,8 @@ const tourSteps = {
         {
             id: 'recording-controls',
             target: '.recording-controls',
-            title: 'Controles de Gravação',
-            text: 'Use estes botões para iniciar, pausar, retomar ou concluir a gravação. A gravação é salva automaticamente quando você conclui.',
+            title: 'Grave a consulta',
+            text: 'Clique no microfone para iniciar a gravação. Você pode pausar, continuar e finalizar quando quiser.',
             attachTo: {
                 element: '.recording-controls',
                 on: 'top'
@@ -100,8 +103,8 @@ const tourSteps = {
         {
             id: 'transcription-button',
             target: '.transcription-button',
-            title: 'Gerar Transcrição',
-            text: 'Após concluir a gravação, clique neste botão para gerar a transcrição do áudio. O processo pode levar alguns segundos, dependendo da duração da gravação.',
+            title: 'Transcrição primeiro',
+            text: 'Use esta opção para gerar a transcrição da consulta. O texto aparecerá ao lado para revisão e edição antes de gerar qualquer documento.',
             attachTo: {
                 element: '.transcription-button',
                 on: 'top'
@@ -118,13 +121,13 @@ const tourSteps = {
             ]
         },
         {
-            id: 'transcribe-and-generate-button',
-            target: '.transcribe-and-generate-button',
-            title: 'Transcrever e gerar documento',
-            text: '',
+            id: 'transcription-preview',
+            target: '.transcription-preview',
+            title: 'Revise a transcrição',
+            text: 'A transcrição será exibida aqui. Você pode revisar o conteúdo antes de transformar a consulta em documento clínico.',
             attachTo: {
-                element: '.transcribe-and-generate-button',
-                on: 'top'
+                element: '.transcription-preview',
+                on: 'left'
             },
             buttons: [
                 {
@@ -138,13 +141,13 @@ const tourSteps = {
             ]
         },
         {
-            id: 'transcription-preview',
-            target: '.transcription-preview',
-            title: 'Transcrição em Tempo Real',
-            text: 'Enquanto você grava, a transcrição é gerada em tempo real. Você pode revisar o texto e fazer correções antes de salvar.',
+            id: 'transcribe-and-generate-button',
+            target: '.transcribe-and-generate-button',
+            title: 'Transcrever e gerar documento',
+            text: 'Esta opção transcreve o áudio e já gera automaticamente o documento clínico completo com apoio da IA. A transcrição poderá ser acessada depois na página de detalhes do documento clínico.',
             attachTo: {
-                element: '.transcription-preview',
-                on: 'left'
+                element: '.transcribe-and-generate-button',
+                on: 'top'
             },
             buttons: [
                 {
@@ -204,7 +207,7 @@ const startTour = () => {
 
     tour.on('complete', () => {
         emit('tour-complete');
-        localStorage.setItem(`tour_completed_${props.tourType}`, 'true');
+        localStorage.setItem(`${props.tourType}_tour_completed`, 'true');
     });
 
     tour.on('cancel', () => {
@@ -215,7 +218,7 @@ const startTour = () => {
 };
 
 const checkTourCompleted = () => {
-    return localStorage.getItem(`tour_completed_${props.tourType}`) === 'true';
+    return userStore.recordingTourCompleted;
 };
 
 onMounted(() => {
@@ -235,5 +238,58 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-
+/* DARK THEME */
+:global([class*="app-dark"] .shepherd-theme-custom) {
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.45),
+        0 4px 12px rgba(0, 0, 0, 0.25);
+}
+:global([class*="app-dark"] .shepherd-theme-custom .shepherd-content) {
+    background: var(--surface-card, #0f172a);
+    border: 1px solid var(--surface-border, #1e293b);
+}
+:global([class*="app-dark"] .shepherd-theme-custom .shepherd-header) {
+    background: var(--surface-hover, #111827);
+}
+:global([class*="app-dark"] .shepherd-theme-custom .shepherd-cancel-icon) {
+    color: white !important;
+}
+:global([class*="app-dark"] .shepherd-theme-custom .shepherd-title) {
+    color: white;
+}
+:global([class*="app-dark"] .shepherd-theme-custom .shepherd-text) {
+    background: var(--surface-card, #0f172a);
+    color: white;
+}
+:global([class*="app-dark"] .shepherd-theme-custom .shepherd-footer) {
+    background: var(--surface-card, #0f172a);
+    border-top: 1px solid var(--surface-border, #1f2937);
+}
+:global([class*="app-dark"] .shepherd-button-primary) {
+    background: #3b82f6;
+    color: white;
+    margin-top: 10px;
+}
+:global([class*="app-dark"] .shepherd-button-primary:hover) {
+    background: color-mix(in srgb, var(--primary-color, #3b82f6) 85%, white);
+}
+:global([class*="app-dark"] .shepherd-button-secondary) {
+    background: var(--surface-border, #151c26);
+    color: var(--text-color, #e5e7eb);
+    margin-top: 10px;
+}
+:global([class*="app-dark"] .shepherd-button-secondary:hover) {
+    background: color-mix(in srgb, var(--surface-border, #151c26) 75%, white) !important;
+    color: #e5e7eb !important;
+}
+:global([class*="app-dark"] .shepherd-theme-custom .shepherd-cancel-icon) {
+    color: var(--primary-contrast-color, rgba(255, 255, 255, 0.9));
+}
+:global([class*="app-dark"] .shepherd-highlight) {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary-color, #3b82f6) 45%, transparent);
+}
+:global([class*="app-dark"] .shepherd-modal-mask-container) {
+    background: var(--maskbg, rgba(0, 0, 0, 0.7));
+    backdrop-filter: blur(6px);
+}
 </style>

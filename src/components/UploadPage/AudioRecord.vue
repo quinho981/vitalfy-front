@@ -1,5 +1,5 @@
 <template>
-    <div ref="recorderRef" class="w-full bg-surface-50 dark:bg-surface-800 border-2 border-dashed border-surface-300 dark:border-surface-700 rounded-lg p-6 flex flex-col gap-0">
+    <div ref="recorderRef" class="recorder-container w-full bg-surface-50 dark:bg-surface-800 border-2 border-dashed border-surface-300 dark:border-surface-700 rounded-lg p-6 flex flex-col gap-0">
         <div 
             class="flex items-center justify-between"
             :class="!recording && !audioUrl ? 'mb-3' : 'mb-5'"
@@ -31,9 +31,9 @@
             </span>
         </div>
 
-        <div 
-            class="flex items-baseline gap-1.5"
-            :class="!recording && !audioUrl ? 'mb-0' : 'mb-5'"    
+        <div
+            class="timer-display flex items-baseline gap-1.5"
+            :class="!recording && !audioUrl ? 'mb-0' : 'mb-5'"
         >
             <span class="font-robotomono text-5xl font-semibold tracking-tight text-surface-900 dark:text-surface-100 leading-none tabular-nums">
                 {{ formatTime(timer) }}
@@ -44,8 +44,8 @@
         </div>
 
         <div
-            v-if="recording || audioUrl" 
-            class="w-full h-14 rounded-lg bg-surface-100 dark:bg-surface-700 border border-surface-200 dark:border-surface-600 flex items-center justify-center gap-[3px] px-3 overflow-hidden mb-6"
+            v-if="recording || audioUrl"
+            class="audio-visualizer w-full h-14 rounded-lg bg-surface-100 dark:bg-surface-700 border border-surface-200 dark:border-surface-600 flex items-center justify-center gap-[3px] px-3 overflow-hidden mb-6"
         >
             <div
                 v-for="(bar, i) in bars"
@@ -60,7 +60,7 @@
             />
         </div>
 
-        <div class="flex items-center justify-center gap-3 mb-4">
+        <div class="recording-controls flex items-center justify-center gap-3 mb-4">
             <button
                 v-if="!recording && !audioUrl"
                 class="w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white flex items-center justify-center shadow-md shadow-blue-200 dark:shadow-blue-900 transition-all duration-200"

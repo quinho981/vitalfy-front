@@ -156,7 +156,7 @@
                             :disabled="!selectedFile || isTranscribing || loadingTranscribeAndGenerate"
                             outlined
                             severity="secondary"
-                            class="!border-blue-500 !text-blue-500 !bg-white !rounded-lg font-semibold hover:!bg-blue-50 dark:!bg-surface-800 dark:hover:!bg-surface-700"
+                            class="transcription-button !border-blue-500 !text-blue-500 !bg-white !rounded-lg font-semibold hover:!bg-blue-50 dark:!bg-surface-800 dark:hover:!bg-surface-700"
                         >
                             <Loader2 v-if="isTranscribing" :size="16" class="animate-spin mr-2" />
                             <MessagesSquare v-else :size="16" class="mr-1" />
@@ -165,7 +165,7 @@
                         <Button
                             @click="transcribeAndGenerateDocument"
                             :disabled="!selectedFile || isTranscribing || loadingTranscribeAndGenerate"
-                            class="!bg-gradient-to-br !from-blue-500 !to-blue-700 !border-none !text-white !rounded-lg font-semibold hover:!from-blue-600 hover:!to-blue-800"
+                            class="transcribe-and-generate-button !bg-gradient-to-br !from-blue-500 !to-blue-700 !border-none !text-white !rounded-lg font-semibold hover:!from-blue-600 hover:!to-blue-800"
                         >
                             <Loader2 v-if="loadingTranscribeAndGenerate" :size="16" class="animate-spin mr-2" />
                             <FilePlus v-else :size="16" class="mr-1" />
@@ -213,6 +213,14 @@
             @close="handleSignatureClose"
             @subscribe="handleSignatureSubscribe"
         />
+
+        <TourGuide
+            v-if="isRecordMode()"
+            tour-type="recording"
+            :show-tour-button="false"
+            :auto-start="true"
+            @tour-complete="onTourComplete"
+        />
     </section>
 </template>
 
@@ -222,12 +230,12 @@ import { Upload, FileVolume, Loader2, FilePlus, MessagesSquare, HelpCircle } fro
 import { AnamneseService } from '@/service/AnamneseService';
 import { TranscriptsService } from '@/service/TranscriptsService';
 import { SelectOptionsService } from '@/service/SelectOptionsService';
+import { UserService } from '@/service/UserService'
 import { useShowToast } from '@/utils/useShowToast';
 import { useI18n } from 'vue-i18n';
 import { useRouter, useRoute } from "vue-router";
 import { useHelpers } from '@/utils/helper';
 import { useUserStore } from '@/stores/userStore'
-import Signature from '@/components/Modal/Signature.vue'
 
 const router = useRouter();
 const route = useRoute();
@@ -583,6 +591,16 @@ const handleSignatureSubscribe = async (plan) => {
         signatureLoading.value = false
     }
 }
+
+const onTourComplete = async () => {
+    try {
+        await UserService.update({ recording_tour_completed: true });
+
+        userStore.recordingTourCompleted = true;
+    } catch (error) {
+        console.error('Error updating tour completion:', error);
+    }
+};
 
 onMounted(() => {
     loadTemplates();

@@ -1,5 +1,5 @@
 <template>
-    <div class="card w-full md:w-1/2 flex flex-col gap-y-3">
+    <div class="transcription-preview card w-full md:w-1/2 flex flex-col gap-y-3">
         <div class="flex items-center gap-x-3">
             <div class="w-9 h-9 rounded-lg bg-teal-50 flex items-center justify-center flex-shrink-0 dark:bg-teal-950">
                 <FileAudio2 :size="17" class="text-teal-600 dark:text-teal-400" />

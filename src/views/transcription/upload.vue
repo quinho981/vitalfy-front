@@ -4,7 +4,7 @@
             <h1 class="text-3xl font-bold">Novo atendimento</h1>
             <p class="my-1 text-lg text-surface-500">Grave ou envie o áudio da consulta para gerar automaticamente o documento clínico e os insights</p>
         </div>
-        <div class="flex gap-x-4 flex-wrap md:flex-nowrap">
+        <div class="flex gap-x-5 flex-wrap md:flex-nowrap">
             <div class="card w-full md:w-1/2 flex flex-col gap-y-4 mb-5 md:mb-0">
                 <SelectButtonMode 
                     :modelValue="inputMode"

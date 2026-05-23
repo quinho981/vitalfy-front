@@ -3,12 +3,13 @@ import Cookies from 'js-cookie';
 
 export const DashboardService = {
 
-    async summary() {
+    async summary(period = 'today') {
         const token = Cookies.get('token');
 
         try {
             const response = await api.get('/dashboard/summary', { 
-                headers: { Authorization: `Bearer ${token}` } 
+                headers: { Authorization: `Bearer ${token}` },
+                params: { period }
             });
             return response.data
         } catch (error) {

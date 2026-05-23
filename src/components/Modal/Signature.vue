@@ -87,10 +87,10 @@
                     </p>
                 </div>
 
-                <div class="flex-1 p-7 flex flex-col">
+                <div class="flex-1 p-7 flex flex-col dark:bg-surface-800">
                     <div class="flex justify-between items-center mb-5">
                         <p class="text-sm font-medium text-gray-800 dark:text-slate-200 m-0">
-                            O que você ganha com o Pro
+                            O que você ganha com o plano Profissional
                         </p>
 
                         <button 
@@ -103,7 +103,7 @@
                         </button>
                     </div>
 
-                    <ul class="flex flex-col m-0 p-0 list-none divide-y divide-gray-100 dark:divide-slate-800">
+                    <ul class="flex flex-col m-0 p-0 list-none divide-y divide-gray-100 dark:divide-slate-700">
                         <li 
                             v-for="benefit in benefits" 
                             :key="benefit" 

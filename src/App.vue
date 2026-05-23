@@ -13,7 +13,6 @@ onMounted(async () => {
 
     try {
         await userStore.getUserInfo()
-        console.log('plano do usuário: ', userStore.plan)
         if (userStore.plan === 'Pro') {
             showSubscriptionSuccessModal.value = true
         }

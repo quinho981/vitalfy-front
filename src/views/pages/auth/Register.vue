@@ -68,6 +68,10 @@
                                 :feedback="true"
                                 :class="['w-full !rounded-lg', errors.password ? 'p-invalid' : '']"
                                 inputClass="!px-4 !py-3 !rounded-lg !border-gray-200 dark:!border-zinc-600"
+                                promptLabel="Escolha a senha" 
+                                weakLabel="Muito fraca" 
+                                mediumLabel="Média" 
+                                strongLabel="Forte"
                             />
 
                             <small class="p-error" v-if="errors.password">{{ errors.password }}</small>

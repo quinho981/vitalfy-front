@@ -1,17 +1,54 @@
 <template>
     <section>
-        <div class="mb-3 py-3">
+        <div class="mb-3 py-3 flex justify-between items-end flex-wrap gap-y-3">
             <div>
                 <h1 class="text-3xl font-bold">Dashboard</h1>
                 <p class="my-1 text-lg text-surface-500">Bem-vindo de volta, <span class="font-semibold text-surface-700 dark:text-surface-300">{{ userStore.username }}</span></p>
             </div>
+            <div class="mb-5 flex gap-2">
+                <button
+                    @click="setPeriod('today')"
+                    :class="[
+                        'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                        selectedPeriod === 'today'
+                            ? 'bg-primary-600 text-white hover:bg-primary-700'
+                            : 'bg-surface-200 text-surface-600 hover:bg-surface-300 dark:bg-surface-800 dark:text-surface-300 dark:hover:bg-surface-700'
+                    ]"
+                >
+                    Hoje
+                </button>
+                <button
+                    @click="setPeriod('week')"
+                    :class="[
+                        'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                        selectedPeriod === 'week'
+                            ? 'bg-primary-600 text-white hover:bg-primary-700'
+                            : 'bg-surface-200 text-surface-600 hover:bg-surface-300 dark:bg-surface-800 dark:text-surface-300 dark:hover:bg-surface-700'
+                    ]"
+                >
+                    Semana
+                </button>
+                <button
+                    @click="setPeriod('month')"
+                    :class="[
+                        'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                        selectedPeriod === 'month'
+                            ? 'bg-primary-600 text-white hover:bg-primary-700'
+                            : 'bg-surface-200 text-surface-600 hover:bg-surface-300 dark:bg-surface-800 dark:text-surface-300 dark:hover:bg-surface-700'
+                    ]"
+                >
+                    Mês
+                </button>
+            </div>
         </div>
+
+        
 
         <div class="grid grid-cols-12 gap-5">
             <div class="col-span-12 md:col-span-6 xl:col-span-3">
                 <div class="card mb-0 flex flex-col gap-y-3">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-medium text-surface-500 uppercase tracking-wide dark:text-surface-300">Atendimentos hoje</span>
+                        <span class="text-xs font-medium text-surface-500 uppercase tracking-wide dark:text-surface-300">Atendimentos {{ periodLabel }}</span>
                         <div class="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0 dark:bg-blue-950">
                             <FileText :size="17" class="text-blue-700 dark:text-blue-400" />
                         </div>
@@ -25,7 +62,7 @@
             <div class="col-span-12 md:col-span-6 xl:col-span-3">
                 <div class="card mb-0 flex flex-col gap-y-3">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-medium text-surface-500 uppercase tracking-wide dark:text-surface-300">Tempo total hoje</span>
+                        <span class="text-xs font-medium text-surface-500 uppercase tracking-wide dark:text-surface-300">Tempo total {{ periodLabel }}</span>
                         <div class="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0 dark:bg-green-950">
                             <Clock :size="17" class="text-green-700 dark:text-green-400" />
                         </div>
@@ -53,7 +90,7 @@
             <div class="col-span-12 md:col-span-6 xl:col-span-3">
                 <div class="card mb-0 flex flex-col gap-y-3">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-medium text-surface-500 uppercase tracking-wide dark:text-surface-300">Duração média hoje</span>
+                        <span class="text-xs font-medium text-surface-500 uppercase tracking-wide dark:text-surface-300">Duração média {{ periodLabel }}</span>
                         <div class="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0 dark:bg-purple-950">
                             <Timer :size="17" class="text-purple-700 dark:text-purple-400" />
                         </div>
@@ -95,7 +132,7 @@
                         <Sparkles :size="17" class="text-purple-700 dark:text-purple-400" />
                     </div>
                     <div>
-                        <p class="text-sm font-semibold text-surface-800 leading-tight dark:text-surface-300">Uso da IA hoje</p>
+                        <p class="text-sm font-semibold text-surface-800 leading-tight dark:text-surface-300">Uso da IA {{ periodLabel }}</p>
                         <p class="text-xs text-surface-400 mt-0.5">Aproveitamento das transcrições</p>
                     </div>
                 </div>
@@ -190,7 +227,7 @@
                     </div>
                     <div class="relative h-72">
                         <ChartLite type="line" :data="lineData" :options="lineOptions" class="w-full h-full" />
-                        <div v-if="loadingSummary" class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-black/50 rounded-lg">
+                        <div v-if="loadingCharts" class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-black/50 rounded-lg">
                             <ProgressSpinner style="width:48px;height:48px" />
                         </div>
                     </div>
@@ -248,6 +285,7 @@ const loadingSummary = ref(false)
 const loadingCharts = ref(false)
 const loadingTranscripts = ref(false)
 const showSubscriptionSuccessModal = ref(false)
+const selectedPeriod = ref('today')
 const weekData = ref([0, 0, 0, 0, 0, 0, 0])
 const pieData = ref(null)
 const pieOptions = ref(null)
@@ -281,7 +319,7 @@ const commonOptions = { responsive: true, maintainAspectRatio: false }
 
 const getSummary = () => {
     loadingSummary.value = true
-    DashboardService.summary()
+    DashboardService.summary(selectedPeriod.value)
         .then(response => { dataSummary.value = response })
         .finally(() => { loadingSummary.value = false })
 }
@@ -296,6 +334,20 @@ const getCharts = () => {
         })
         .finally(() => { loadingCharts.value = false })
 }
+
+const setPeriod = (period) => {
+    selectedPeriod.value = period
+    getSummary()
+}
+
+const periodLabel = computed(() => {
+    const labels = {
+        today: 'hoje',
+        week: 'na semana',
+        month: 'no mês'
+    }
+    return labels[selectedPeriod.value] || 'hoje'
+})
 
 const getLatestRecentTranscripts = () => {
     loadingTranscripts.value = true

@@ -104,7 +104,7 @@ const tourSteps = {
             id: 'transcription-button',
             target: '.transcription-button',
             title: 'Transcrição primeiro',
-            text: 'Use esta opção para gerar a transcrição da consulta. O texto aparecerá ao lado para revisão e edição antes de gerar qualquer documento.',
+            text: 'Use esta opção para gerar a transcrição da consulta. O texto aparecerá ao lado para revisão antes de gerar qualquer documento.',
             attachTo: {
                 element: '.transcription-button',
                 on: 'top'

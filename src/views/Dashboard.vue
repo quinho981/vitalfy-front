@@ -349,6 +349,24 @@ const periodLabel = computed(() => {
     return labels[selectedPeriod.value] || 'hoje'
 })
 
+const getWeekLabels = () => {
+    const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
+    const now = new Date()
+    const currentDay = now.getDay()
+    const startOfWeek = new Date(now)
+    startOfWeek.setDate(now.getDate() - currentDay)
+
+    const labels = []
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(startOfWeek)
+        date.setDate(startOfWeek.getDate() + i)
+        const formattedDate = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+        labels.push(`${dayNames[i]} ${formattedDate}`)
+    }
+
+    return labels
+}
+
 const getLatestRecentTranscripts = () => {
     loadingTranscripts.value = true
     DashboardService.latestRecentTranscripts()
@@ -390,8 +408,10 @@ const setColorOptions = () => {
         plugins: { legend: { labels: { usePointStyle: true, color: textColor } } }
     }
 
+    const weekLabels = getWeekLabels()
+
     lineData.value = {
-        labels: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
+        labels: weekLabels,
         datasets: [{
             label: 'Atendimentos',
             data: weekData,

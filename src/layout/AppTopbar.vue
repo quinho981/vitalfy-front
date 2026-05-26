@@ -34,7 +34,7 @@ const logout = async () => {
     <div class="layout-topbar !border-b-[1px] dark:border-gray-700">
         <div class="layout-topbar-logo-container">
             <router-link to="/" class="layout-topbar-logo !gap-0 flex items-center">
-                <img src="/vitaris-logo.png" alt="Vitaris Logo" class="w-10 h-8" />
+                <img src="/vitalfy-logo.png" alt="Vitalfy Logo" class="w-10 h-8" />
                 <span class="font-semibold text-3xl text-slate-800 dark:text-slate-200">italfy</span>
             </router-link>
             <button class="layout-menu-button layout-topbar-action ml-[8.2rem]" @click="onMenuToggle">

@@ -7,7 +7,7 @@
             <div class="w-full max-w-md">
                 <div class="text-center mb-8">
                     <div class="flex items-center justify-center">
-                        <img src="/vitaris-logo.png" alt="Vitaris Logo" class="w-14 h-12" />
+                        <img src="/vitalfy-logo.png" alt="Vitalfy Logo" class="w-14 h-12" />
                         <h1 class="text-5xl font-semibold text-gray-800 tracking-tight dark:text-gray-200">
                             italfy
                         </h1>

@@ -172,9 +172,22 @@
                 <div class="col-span-12 xl:col-span-4 rounded-lg">
                     <div class="card flex flex-col gap-5">
                         <div class="flex flex-col items-top">
-                            <div class="flex gap-2">
-                                <BrainCircuit />
-                                <p class="font-semibold text-xl mb-1">Insights Vitalfy</p>
+                            <div class="flex gap-2 justify-between items-center">
+                                <div class="flex gap-2">
+                                    <BrainCircuit />
+                                    <p class="font-semibold text-xl mb-1">Insights Vitalfy</p>
+                                </div>
+                                <button
+                                    v-if="!hasMedicalInsights && !loadingTranscript && (sseFailed || !sseAttempted)"
+                                    @click="regenerateInsights"
+                                    :disabled="regeneratingInsights"
+                                    class="!text-[12px] !font-semibold !py-1 px-2 flex items-center gap-1 border rounded-full bg-surface-100 
+                                    hover:bg-surface-200 duration-200 dark:border-surface-600 dark:bg-surface-800 dark:hover:bg-surface-700 group"
+                                >
+                                    <Loader2 v-if="regeneratingInsights" :size="14" class="animate-spin" />
+                                    <RefreshCw v-else :size="14" class="transition-transform duration-300 group-hover:rotate-180" />
+                                    {{ regeneratingInsights ? 'Gerando...' : 'Recarregar insights' }}
+                                </button>
                             </div>
                             <p class="text-sm text-gray-400">Análise clínica assistida por IA</p>
                         </div>
@@ -256,7 +269,7 @@
 
 <script setup>
 import { defineAsyncComponent, ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
-import { User, Calendar, Clock, Share2, Download, BrainCircuit, LayoutTemplate, Loader2, Copy } from 'lucide-vue-next';
+import { User, Calendar, Clock, Share2, Download, BrainCircuit, LayoutTemplate, Loader2, Copy, RefreshCw } from 'lucide-vue-next';
 import { TranscriptsService } from '@/service/TranscriptsService';
 import { AnamneseService } from '@/service/AnamneseService';
 import { useRoute, useRouter } from "vue-router";
@@ -296,6 +309,9 @@ const medicalAnalysis = ref({
     suggested_conducts: [],
     missing_clinical_information: []
 })
+const sseFailed = ref(false);
+const sseAttempted = ref(false);
+const regeneratingInsights = ref(false);
 
 let eventSource = null;
 
@@ -305,6 +321,8 @@ const hasMedicalInsights = computed(() => {
 
 const showTranscript = async (id) => {
     loadingTranscript.value = true;
+    sseFailed.value = false;
+    sseAttempted.value = false;
     try {
         const response = await TranscriptsService.show(id);
         documentContent.value = ''
@@ -330,7 +348,6 @@ const showTranscript = async (id) => {
             }
         }
     } catch (error) {
-        console.log(error)
         showError(t('notifications.titles.error'), t('notifications.messages.dataLoadingError'), 3000)  
     } finally {
         loadingTranscript.value = false;
@@ -399,11 +416,12 @@ const shareDocument = async () => {
         const clipboardContent = `${shareData.title}\n${shareData.text}`;
         await navigator.clipboard.writeText(clipboardContent);
     } catch (error) {
-        console.error('Erro ao compartilhar:', error);
         showError(t('notifications.titles.error'), 'Não foi possível compartilhar o documento', 3000);
     }
 };
 const startSSE = () => {
+    sseAttempted.value = true;
+    sseFailed.value = false;
     eventSource = new EventSource(`${import.meta.env.VITE_BASE_URL}/stream/insights-ai/${documentId.value}`);
 
     eventSource.onmessage = handleInsightMessage;
@@ -437,7 +455,22 @@ const updateContent = (content) => {
 }
 
 const handleSSEError = (error) => {
+    sseFailed.value = true;
     eventSource.close();
+    showError('Erro', 'Aconteceu um problema ao carregar insights. Tente novamente!', 3000);
+}
+
+const regenerateInsights = async () => {
+    regeneratingInsights.value = true;
+    try {
+        await TranscriptsService.regenerateInsights(documentId.value);
+        showSuccess(t('notifications.titles.success'), 'Geração de insights iniciada!', 3000);
+        startSSE();
+    } catch (error) {
+        showError(t('notifications.titles.error'), 'Erro ao regerar insights', 3000);
+    } finally {
+        regeneratingInsights.value = false;
+    }
 }
 
 watch(

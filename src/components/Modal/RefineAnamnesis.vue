@@ -158,7 +158,7 @@ const { showSuccess, showError } = useShowToast();
 const isVisible = computed(() => props.showRefineModal);
 const isStepReviewAnamnese = computed(() => step.value === 'review')
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'apply-refined']);
 
 const props = defineProps({
     showRefineModal: {

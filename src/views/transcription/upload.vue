@@ -236,6 +236,7 @@ import { useI18n } from 'vue-i18n';
 import { useRouter, useRoute } from "vue-router";
 import { useHelpers } from '@/utils/helper';
 import { useUserStore } from '@/stores/userStore'
+import { AUDIO_CONFIG } from '@/utils/constants'
 
 const router = useRouter();
 const route = useRoute();
@@ -278,17 +279,74 @@ const scrollAfterRecordingStart = () => {
     })
 }
 
-function openFileDialog() {
+const openFileDialog = () => {
     if (transcriptions.value.length > 0) {
-        alert('Por favor, limpe a transcrição antes de enviar um novo arquivo.');
+        showAttention('Atenção', 'Por favor, limpe a transcrição antes de enviar um novo arquivo.', 5000)
         return;
     }
     uploader.value?.choose();
 }
 
-const onFileSelect = (event) => {
-    selectedFile.value = event.files[0];
-};
+const validateAudioFile = async (file) => {
+    if (!file) {
+        showError('Erro', 'Nenhum arquivo selecionado.', 3000)
+        return false
+    }
+
+    const extension = file.name.split('.').pop()?.toLowerCase()
+
+    if (!AUDIO_CONFIG.ALLOWED_EXTENSIONS.includes(extension)) {
+        showError('Arquivo inválido', `Formatos permitidos: ${AUDIO_CONFIG.ALLOWED_EXTENSIONS.join(', ')}`, 5000)
+        return false
+    }
+
+    if (file.size > AUDIO_CONFIG.MAX_FILE_SIZE) {
+        showError('Arquivo muito grande', `O arquivo deve ter no máximo ${formatSize(AUDIO_CONFIG.MAX_FILE_SIZE)}.`, 5000)
+        return false
+    }
+
+    try {
+        const duration = await getAudioDuration(file)
+        if (duration > AUDIO_CONFIG.MAX_RECORDING_DURATION) {
+            showError('Arquivo muito longo', `O áudio deve ter no máximo ${AUDIO_CONFIG.MAX_RECORDING_DURATION / 60} minutos.`, 5000)
+            return false
+        }
+    } catch (error) {
+        console.error('Erro ao verificar duração do áudio:', error)
+    }
+
+    return true
+}
+
+const getAudioDuration = (file) => {
+    return new Promise((resolve, reject) => {
+        const audio = new Audio()
+        const objectUrl = URL.createObjectURL(file)
+        
+        audio.addEventListener('loadedmetadata', () => {
+            URL.revokeObjectURL(objectUrl)
+            resolve(audio.duration)
+        })
+        
+        audio.addEventListener('error', () => {
+            URL.revokeObjectURL(objectUrl)
+            reject(new Error('Falha ao carregar os metadados de áudio'))
+        })
+        
+        audio.src = objectUrl
+    })
+}
+
+const onFileSelect = async (event) => {
+    const file = event.files[0]
+
+    if (!(await validateAudioFile(file))) {
+        uploader.value?.clear()
+        return
+    }
+
+    selectedFile.value = file
+}
 
 const removeFile = () => {
     selectedFile.value = null;
@@ -308,33 +366,6 @@ const clearTranscriptionData = () => {
     endConversationTime.value = ''
     transcriptId.value = '' 
 }
-
-const validateAudioFile = (file) => {
-    const maxSize = 100 * 1024 * 1024; // 100MB
-
-    if (file.size > maxSize) return { valid: false, error: 'Arquivo muito grande. Máximo permitido: 100MB' };
-
-    const supportedTypes = [
-        'audio/mpeg',      // MP3
-        'audio/mp3',       // MP3 alternativo
-        'audio/wav',       // WAV
-        'audio/m4a',       // M4A
-        'audio/aac',       // AAC
-        'audio/ogg',       // OGG
-        'audio/flac',      // FLAC
-        'audio/webm'       // WebM (gerado por gravação no navegador)
-    ];
-
-    if (!supportedTypes.includes(file.type)) {
-        return { 
-            valid: false, 
-            error: `Formato não suportado: ${file.type}. Use MP3, WAV, M4A, AAC, OGG, WebM ou FLAC` 
-        };
-    }
-
-    fileSize.value = file.size
-    return { valid: true };
-};
 
 const transcriptId = ref()
 const transcribeAudio = async () => {
@@ -373,7 +404,7 @@ const transcribeAudio = async () => {
                 showSignatureModal.value = true
                 showAttention('Atenção', 'Você usou todas as transcrições gratuitas', 7000);
             } else {
-                alert('Erro ao transcrever o áudio.');
+                showError('Erro', 'Erro ao transcrever o áudio.', 3000);
             }
         })
         .finally(() => {
@@ -423,13 +454,6 @@ const transcribeAndGenerateDocument = async () => {
             alert('Erro ao transcrever o áudio.');
         }
     }
-};
-
-const getLastUtteranceEndTime = (utterances) => {
-    if (!utterances?.length) return null;
-    
-    const seconds = Math.round(utterances[utterances.length - 1].end);
-    return endConversationTime.value = seconds ?? null;
 };
 
 // TODO: VER A NECESSIDADE DESSA FUNÇÃO E EXCLUIR SE DESNECESSÁRIO
@@ -585,7 +609,6 @@ const handleSignatureSubscribe = async (plan) => {
         
         window.location.href = response.url
     } catch (error) {
-        console.error('Error creating subscription:', error)
         showError(t('notifications.titles.error'), 'Erro ao iniciar assinatura. Tente novamente!', 3000)
     } finally {
         signatureLoading.value = false

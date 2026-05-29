@@ -158,11 +158,12 @@
 import { ref, computed } from 'vue';
 import { Mic, Pause, Play, Square, Download  } from 'lucide-vue-next';
 import { useHelpers } from '@/utils/helper';
+import { useShowToast } from '@/utils/useShowToast';
+import { AUDIO_CONFIG } from '@/utils/constants';
 
 const emit = defineEmits(['recorded', 'recording-started'])
 const { formatTime } = useHelpers();
-
-const recorderRef = ref(null);
+const { showAttention } = useShowToast();
 const recording = ref(false);
 const isPaused = ref(false);
 const audioUrl = ref(null);
@@ -225,6 +226,10 @@ const startRecording = async () => {
 
         interval = setInterval(() => {
             timer.value++;
+            if (timer.value >= AUDIO_CONFIG.MAX_RECORDING_DURATION) {
+                stopRecording();
+                showAttention('Tempo limite atingido', `A gravação foi interrompida após atingir o limite de ${AUDIO_CONFIG.MAX_RECORDING_DURATION / 60} minutos.`, 5000);
+            }
         }, 1000);
 
         audioContext = new AudioContext();
@@ -253,6 +258,10 @@ const resumeRecording = () => {
         isPaused.value = false;
         interval = setInterval(() => {
             timer.value++;
+            if (timer.value >= AUDIO_CONFIG.MAX_RECORDING_DURATION) {
+                stopRecording();
+                showAttention('Tempo limite atingido', `A gravação foi interrompida após atingir o limite de ${AUDIO_CONFIG.MAX_RECORDING_DURATION / 60} minutos.`, 5000);
+            }
         }, 1000);
         animateBars();
     }

@@ -5,7 +5,7 @@
         </div>
         <div>
             <p class="text-sm font-semibold text-surface-800 dark:text-surface-200">Enviar áudio</p>
-            <p class="text-xs text-surface-400 mt-0.5">Formatos suportados: MP3, WAV, M4A, AAC, OGG, FLAC (máx. 100MB)</p>
+            <p class="text-xs text-surface-400 mt-0.5">Formatos suportados: MP3, WAV, M4A, AAC, OGG, FLAC (máx. 100MB/30min)</p>
         </div>
     </div>
 </template>

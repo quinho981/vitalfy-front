@@ -5,7 +5,7 @@
         </div>
         <div>
             <p class="text-sm font-semibold text-surface-800 dark:text-surface-200">Gravar áudio</p>
-            <p class="text-xs text-surface-400 mt-0.5">Controle a gravação da consulta</p>
+            <p class="text-xs text-surface-400 mt-0.5">Controle a gravação da consulta (máx. 30min)</p>
         </div>
     </div>
 </template>

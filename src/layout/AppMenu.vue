@@ -90,7 +90,7 @@ const handleSubscribe = async (plan) => {
     <div class="layout-sidebar">
         <div class="layout-menu">
             <Button 
-                class="w-full !bg-blue-600 mb-2 mt-1 !rounded-xl !border-none dark:!text-white hover:!bg-blue-700"
+                class="w-full !bg-blue-600 mb-2 mt-1 !rounded-lg !border-none dark:!text-white hover:!bg-blue-700"
                 @click="redirectToTranscript"
             >
                 <Plus :size="14  " /> Novo Atendimento
@@ -236,27 +236,4 @@ const handleSubscribe = async (plan) => {
 </template>
 
 <style lang="scss" scoped>
-.gradient-text {
-    background: linear-gradient(to right, #14b8a6, rgb(29, 242, 150));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-.icon-transition {
-    transition: all 0.3s ease;
-}
-.div-icon-transition:hover .icon-transition {
-    animation: pulse-and-rotate 1s infinite alternate;
-    transform-origin: center;
-}
-@keyframes pulse-and-rotate {
-    0% {
-        transform: scale(1) rotate(0deg);
-    }
-    50% {
-        transform: scale(1.5) rotate(10deg);
-    }
-    100% {
-        transform: scale(1.3) rotate(-10deg);
-    }
-}
 </style>

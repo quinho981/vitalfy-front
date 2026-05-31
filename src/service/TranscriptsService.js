@@ -1,8 +1,5 @@
 import api from '@/services/axios';
 import Cookies from 'js-cookie';
-// import { useToast } from 'primevue/usetoast';
-
-// const toast = useToast();
 
 export const TranscriptsService = {
     async index(page = 1, perPage = 10) {

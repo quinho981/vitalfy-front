@@ -1,3 +1,4 @@
+// TODO: APAGAR
 export const setupMicrophoneAnalyser = () => {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices.getUserMedia({ audio: true })

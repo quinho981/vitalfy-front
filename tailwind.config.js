@@ -25,6 +25,10 @@ module.exports = {
         'dark:text-indigo-400',
         'dark:bg-orange-500/10', 
         'dark:text-orange-400',
+        'bg-teal-50',
+        'text-teal-600',
+        'dark:bg-teal-500/10',
+        'dark:text-teal-400'
     ],
     plugins: [require('tailwindcss-primeui')],
     theme: {

@@ -451,7 +451,7 @@ const transcribeAndGenerateDocument = async () => {
             showSignatureModal.value = true
             showAttention('Atenção', 'Você usou todas as transcrições gratuitas', 7000);
         } else {
-            alert('Erro ao transcrever o áudio.');
+            showError('Erro', 'Erro ao transcrever o áudio.', 3000);
         }
     }
 };

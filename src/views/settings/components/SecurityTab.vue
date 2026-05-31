@@ -2,17 +2,17 @@
     <div class="flex flex-col gap-5 max-w-lg">
         <div>
             <label class="mb-1">Senha atual</label>
-            <Password v-model="form.current_password" toggleMask fluid :invalid="errorCurrentPassword" />
+            <Password v-model="form.current_password" toggleMask fluid :invalid="errorCurrentPassword" :feedback="false" />
         </div>
 
         <div>
             <label class="mb-1">Nova senha</label>
-            <Password v-model="form.new_password" toggleMask fluid :invalid="errorNewPassword" />
+            <Password v-model="form.new_password" toggleMask fluid :invalid="errorNewPassword" promptLabel="Escolha a senha" weakLabel="Muito fraca" mediumLabel="Média" strongLabel="Forte" />
         </div>
 
         <div>
             <label class="mb-1">Confirmar nova senha</label>
-            <Password v-model="form.new_password_confirmation" toggleMask fluid :invalid="errorNewPassword" />
+            <Password v-model="form.new_password_confirmation" toggleMask fluid :invalid="errorNewPassword" :feedback="false"/>
         </div>
 
         <div class="flex justify-end">

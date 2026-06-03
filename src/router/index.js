@@ -83,6 +83,12 @@ const router = createRouter({
                     name: 'register',
                     component: () => import('@/views/pages/auth/Register.vue')
                 },
+                {
+                    path: '/auth/onboarding',
+                    name: 'onboarding',
+                    component: () => import('@/views/pages/auth/UserOnboarding.vue'),
+                    meta: { requiresAuth: true }
+                },
             ]
         },
         {

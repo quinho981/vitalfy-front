@@ -12,6 +12,7 @@ export const useUserStore = defineStore('user', () => {
     const active = ref(Cookies.get('active') || null)
     const remaining = ref(localStorage.getItem('remaining') || null)
     const recordingTourCompleted = ref(localStorage.getItem('recording_tour_completed') === 'true')
+    const onboardingCompleted = ref(localStorage.getItem('onboarding_completed') === 'true')
 
     const getUserInfo = async () => {
         const token = Cookies.get('token')
@@ -28,6 +29,7 @@ export const useUserStore = defineStore('user', () => {
             active.value = response.data.plan.name !== 'Free'
             remaining.value = response.data.remaining
             recordingTourCompleted.value = response.data.user.recording_tour_completed || false
+            onboardingCompleted.value = response.data.user.onboarding_completed || false
 
             Cookies.set('id', userId.value)
             Cookies.set('username', username.value)
@@ -37,6 +39,7 @@ export const useUserStore = defineStore('user', () => {
             Cookies.set('active', active.value)
             localStorage.setItem('remaining', remaining.value)
             localStorage.setItem('recording_tour_completed', recordingTourCompleted.value)
+            localStorage.setItem('onboarding_completed', onboardingCompleted.value)
 
             return response.data
         } catch (error) {
@@ -53,6 +56,7 @@ export const useUserStore = defineStore('user', () => {
         active.value = null
         remaining.value = null
         recordingTourCompleted.value = false
+        onboardingCompleted.value = false
     }
 
     return {
@@ -64,6 +68,7 @@ export const useUserStore = defineStore('user', () => {
         active,
         remaining,
         recordingTourCompleted,
+        onboardingCompleted,
         getUserInfo,
         reset
     }

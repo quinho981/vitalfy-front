@@ -132,7 +132,12 @@ const submit = async () => {
     try {
         await auth.login(form.value);
         await userStore.getUserInfo();
-        router.push({ name: 'dashboard' });
+        
+        if (!userStore.onboardingCompleted) {
+            router.push({ name: 'onboarding' });
+        } else {
+            router.push({ name: 'dashboard' });
+        }
     } catch (error) {
         errorMessage.value = true;
         loading.value = false;

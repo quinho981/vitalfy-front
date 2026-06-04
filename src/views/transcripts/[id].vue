@@ -159,9 +159,10 @@
                                     <span class="ml-2">Carregando editor...</span>
                                 </div>
                                 <div v-else>
-                                    <Tiptap 
+                                    <Tiptap
                                         :content="documentContent"
                                         @open-refine-modal="showRefineModal = true"
+                                        @save="handleSaveDocument"
                                     />
                                 </div>
                             </div>
@@ -470,6 +471,16 @@ const regenerateInsights = async () => {
         showError(t('notifications.titles.error'), 'Erro ao regerar insights', 3000);
     } finally {
         regeneratingInsights.value = false;
+    }
+}
+
+const handleSaveDocument = async (content) => {
+    try {
+        await AnamneseService.update(documentId.value, content);
+        documentContent.value = content;
+        showSuccess(t('notifications.titles.success'), 'Documento salvo com sucesso!', 3000);
+    } catch (error) {
+        showError(t('notifications.titles.error'), 'Erro ao salvar documento. Tente novamente!', 3000);
     }
 }
 

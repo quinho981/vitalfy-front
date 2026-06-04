@@ -70,10 +70,19 @@
             <button
                 v-if="allowRefine"
                 @click="$emit('open-refine-modal')"
-                class="ml-auto mr-3 flex items-center px-4 py-2 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full font-semibold text-white hover:opacity-90 transition"
+                class="ml-auto flex items-center px-4 py-2 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full text-[13.5px] font-semibold text-white hover:opacity-90 transition"
+                :class=" hasUnsavedChanges ? '' : 'mr-3'"
             >
-                <Sparkles :size="18" class="mr-2" />
+                <Sparkles :size="16" class="mr-2" />
                 Refinar anamnese
+            </button>
+            <button
+                v-if="hasUnsavedChanges && allowRefine"
+                @click="handleSave"
+                class="flex items-center px-4 py-2 mr-2 bg-green-700 rounded-full font-semibold text-[13.5px] text-white hover:opacity-90 transition"
+            >
+                <Save :size="18" class="mr-2" />
+                Salvar
             </button>
         </section>
         <component :is="EditorContent" :editor="editor" />
@@ -81,8 +90,8 @@
 </template>
 
 <script setup>
-import { markRaw, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
-import { Heading1, Heading2, Heading3, Bold as BoldIcon, Italic as ItalicIcon, List, ListOrdered, Undo, Redo, Sparkles } from 'lucide-vue-next';
+import { markRaw, onBeforeUnmount, onMounted, ref, shallowRef, watch, computed } from 'vue';
+import { Heading1, Heading2, Heading3, Bold as BoldIcon, Italic as ItalicIcon, List, ListOrdered, Undo, Redo, Sparkles, Save } from 'lucide-vue-next';
 
 const props = defineProps({
     content: {
@@ -93,12 +102,23 @@ const props = defineProps({
         type: Boolean,
         default: true
     }
-}); 
+});
 
-const emit = defineEmits(['open-refine-modal', 'update:content']);
+const emit = defineEmits(['open-refine-modal', 'update:content', 'save']);
 
 const editor = ref(null);
 const EditorContent = shallowRef(null);
+
+const hasUnsavedChanges = computed(() => {
+    if (!editor.value) return false;
+    return editor.value.can().chain().focus().undo().run();
+});
+
+const handleSave = () => {
+    if (editor.value) {
+        emit('save', editor.value.getHTML());
+    }
+};
 
 onMounted(() => {
     initEditor();

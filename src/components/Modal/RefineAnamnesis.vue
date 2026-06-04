@@ -232,18 +232,11 @@ const applyRefinement = async () => {
     }
 };
 
-// TODO: colocar no service
 const acceptRefinement = async () => {
-    const token = Cookies.get('token');
     loadingSave.value = true
     try {
-        const response = await api.put(`/documents/${props.documentId}`, { result: refinedContent.value }, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        await AnamneseService.update(props.documentId, refinedContent.value);
         showSuccess(t('notifications.titles.success'), 'Anamnese refinada salva com sucesso!', 3000)
-        return response;
     } catch (error) {
         showError(t('notifications.titles.error'), 'Problema ao salvar a anamnese refinada. Tente novamente!', 3000)
     } finally {

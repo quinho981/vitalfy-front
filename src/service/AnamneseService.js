@@ -41,4 +41,17 @@ export const AnamneseService = {
             console.error(error);
         }
     },
+    async update(documentId, content) {
+        const token = Cookies.get('token');
+        try {
+            const response = await api.put(`/documents/${documentId}`, { result: content }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
 }

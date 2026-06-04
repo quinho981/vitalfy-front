@@ -79,10 +79,12 @@
             <button
                 v-if="hasUnsavedChanges && allowRefine"
                 @click="handleSave"
-                class="flex items-center px-4 py-2 mr-2 bg-green-700 rounded-full font-semibold text-[13.5px] text-white hover:opacity-90 transition"
+                :disabled="isSaving"
+                class="flex items-center px-4 py-2 mr-2 bg-green-700 rounded-full font-semibold text-[13.5px] text-white hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                <Save :size="18" class="mr-2" />
-                Salvar
+                <Loader2 v-if="isSaving" :size="18" class="mr-2 animate-spin" />
+                <Save v-else :size="18" class="mr-2" />
+                {{ isSaving ? 'Salvando...' : 'Salvar' }}
             </button>
         </section>
         <component :is="EditorContent" :editor="editor" />
@@ -91,7 +93,7 @@
 
 <script setup>
 import { markRaw, onBeforeUnmount, onMounted, ref, shallowRef, watch, computed } from 'vue';
-import { Heading1, Heading2, Heading3, Bold as BoldIcon, Italic as ItalicIcon, List, ListOrdered, Undo, Redo, Sparkles, Save } from 'lucide-vue-next';
+import { Heading1, Heading2, Heading3, Bold as BoldIcon, Italic as ItalicIcon, List, ListOrdered, Undo, Redo, Sparkles, Save, Loader2 } from 'lucide-vue-next';
 
 const props = defineProps({
     content: {
@@ -101,6 +103,10 @@ const props = defineProps({
     allowRefine: {
         type: Boolean,
         default: true
+    },
+    isSaving: {
+        type: Boolean,
+        default: false
     }
 });
 

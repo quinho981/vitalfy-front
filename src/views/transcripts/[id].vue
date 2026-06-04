@@ -160,7 +160,9 @@
                                 </div>
                                 <div v-else>
                                     <Tiptap
+                                        :key="tiptapKey"
                                         :content="documentContent"
+                                        :isSaving="isSaving"
                                         @open-refine-modal="showRefineModal = true"
                                         @save="handleSaveDocument"
                                     />
@@ -300,6 +302,8 @@ const loadingTranscript = ref(false);
 const loadingConversations = ref(false);
 const documentId = ref();
 const showRefineModal = ref(false);
+const tiptapKey = ref(0); // key responsável pela renderização do tiptap, necessário para atualizar o conteúdo após refinamento
+const isSaving = ref(false);
 const medicalAnalysis = ref({
     red_flags: [],
     case_severity: [],
@@ -453,6 +457,7 @@ const handleInsightMessage = (event) => {
 
 const updateContent = (content) => {
     documentContent.value = content
+    tiptapKey.value++;
 }
 
 const handleSSEError = (error) => {
@@ -475,12 +480,16 @@ const regenerateInsights = async () => {
 }
 
 const handleSaveDocument = async (content) => {
+    isSaving.value = true;
     try {
         await AnamneseService.update(documentId.value, content);
         documentContent.value = content;
+        tiptapKey.value++;
         showSuccess(t('notifications.titles.success'), 'Documento salvo com sucesso!', 3000);
     } catch (error) {
         showError(t('notifications.titles.error'), 'Erro ao salvar documento. Tente novamente!', 3000);
+    } finally {
+        isSaving.value = false;
     }
 }
 

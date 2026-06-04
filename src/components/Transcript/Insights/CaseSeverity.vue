@@ -37,17 +37,25 @@ const props = defineProps({
 });
 
 const severityMap = {
-    low: {
-        color: 'bg-green-500',
-        label: 'Baixo risco'
-    },
-    moderate: {
-        color: 'bg-yellow-500',
-        label: 'Risco moderado'
-    },
-    high: {
+    vermelho: {
         color: 'bg-red-500',
-        label: 'Alto risco'
+        label: 'Emergência'
+    },
+    laranja: {
+        color: 'bg-orange-500',
+        label: 'Muito urgente'
+    },
+    amarelo: {
+        color: 'bg-yellow-500',
+        label: 'Urgente'
+    },
+    verde: {
+        color: 'bg-green-500',
+        label: 'Pouco urgente'
+    },
+    azul: {
+        color: 'bg-blue-500',
+        label: 'Não urgente'
     }
 }
 

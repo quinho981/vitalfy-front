@@ -42,7 +42,9 @@
             </div>
         </div>
 
-        
+        <Message severity="success" closable class="mb-5">
+            Você utilizou a Vitalfy por {{ convertSecondsToMinutes(dataSummary.transcriptsDurationToday) }} e economizou aproximadamente {{ convertSecondsToMinutes((8 * 60 * dataSummary.transcriptsCountToday) - dataSummary.transcriptsDurationToday) }} em documentação clínica {{ periodLabel === 'hoje' ? `no dia` : `${periodLabel}` }}.
+        </Message>
 
         <div class="grid grid-cols-12 gap-5">
             <div class="col-span-12 md:col-span-6 xl:col-span-3">
@@ -63,8 +65,8 @@
                 <div class="card mb-0 flex flex-col gap-y-3">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-medium text-surface-500 uppercase tracking-wide dark:text-surface-300">Tempo total {{ periodLabel }}</span>
-                        <div class="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0 dark:bg-green-950">
-                            <Clock :size="17" class="text-green-700 dark:text-green-400" />
+                        <div class="w-9 h-9 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0 dark:bg-green-950">
+                            <Clock :size="17" class="text-amber-700 dark:text-amber-400" />
                         </div>
                     </div>
                     <div v-if="!loadingSummary" class="text-3xl font-bold text-surface-800 dark:text-surface-0">{{ convertSecondsToMinutes(dataSummary.transcriptsDurationToday) }}</div>
@@ -76,14 +78,14 @@
             <div class="col-span-12 md:col-span-6 xl:col-span-3">
                 <div class="card mb-0 flex flex-col gap-y-3">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-medium text-surface-500 uppercase tracking-wide dark:text-surface-300">Atendimentos urgentes</span>
-                        <div class="w-9 h-9 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0 dark:bg-red-950">
-                            <OctagonAlert :size="17" class="text-red-600 dark:text-red-400" />
+                        <span class="text-xs font-medium text-surface-500 uppercase tracking-wide dark:text-surface-300">Tempo economizado {{ periodLabel }}</span>
+                        <div class="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0 dark:bg-green-950">
+                            <AlarmClockPlus :size="17" class="text-green-700 dark:text-green-400" />
                         </div>
                     </div>
-                    <div v-if="!loadingSummary" class="text-3xl font-bold text-surface-800 dark:text-surface-0">{{ dataSummary.urgentTranscriptsCountToday }}</div>
-                    <Skeleton v-else height="32px" width="3rem" class="rounded-lg" />
-                    <span class="text-xs text-surface-400">Casos marcados como prioridade</span>
+                    <div v-if="!loadingSummary" class="text-3xl font-bold text-surface-800 dark:text-surface-0">{{ convertSecondsToMinutes((8 * 60 * dataSummary.transcriptsCountToday) - dataSummary.transcriptsDurationToday) }}</div>
+                    <Skeleton v-else height="32px" width="6rem" class="rounded-lg" />
+                    <span class="text-xs text-surface-400">Tempo ganho com transcrições</span>
                 </div>
             </div>
 
@@ -268,7 +270,7 @@ import { useLayout } from '@/layout/composables/layout'
 import { useUserStore } from '@/stores/userStore'
 import { DashboardService } from '@/service/DashboardService'
 import { SubscriptionService } from '@/service/SubscriptionService'
-import { Mic, FileText, Clock, OctagonAlert, Timer, Sparkles, TrendingUp, PieChart, HelpCircle } from 'lucide-vue-next'
+import { Mic, FileText, Clock, OctagonAlert, Timer, Sparkles, TrendingUp, PieChart, HelpCircle, AlarmClockPlus } from 'lucide-vue-next'
 import { useHelpers } from '@/utils/helper'
 import ChartLite from '@/components/ChartLite.vue'
 import SubscriptionSuccessModal from '@/components/Modal/SubscriptionSuccessModal.vue'

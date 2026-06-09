@@ -12,13 +12,17 @@ export const useHelpers = () => {
     }
 
     const convertSecondsToMinutes = (seconds) => {
-        const mins = Math.floor(seconds / 60);
+        const hours = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
         const secs = Math.floor(seconds % 60);
 
-        if (mins === 0) return `${secs}s`;
-        if (secs === 0) return `${mins}min`;
+        const parts = [];
 
-        return `${mins}min ${secs}s`;
+        if (hours > 0) parts.push(`${hours}h`);
+        if (mins > 0) parts.push(`${mins}min`);
+        if (secs > 0) parts.push(`${secs}s`);
+
+        return parts.length ? parts.join(' ') : '0s';
     };
 
     const capitalizeFirstLetter = (text) => {

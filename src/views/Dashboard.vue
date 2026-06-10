@@ -42,8 +42,14 @@
             </div>
         </div>
 
-        <Message severity="success" closable class="mb-5">
-            Você utilizou a Vitalfy por {{ convertSecondsToMinutes(dataSummary.transcriptsDurationToday) }} e economizou aproximadamente {{ convertSecondsToMinutes((8 * 60 * dataSummary.transcriptsCountToday) - dataSummary.transcriptsDurationToday) }} em documentação clínica {{ periodLabel === 'hoje' ? `no dia` : `${periodLabel}` }}.
+        <Message
+            v-if="showMessage && currentMessage"
+            severity="success"
+            closable
+            class="mb-5"
+            @close="handleMessageClose"
+        >
+            {{ currentMessage }}
         </Message>
 
         <div class="grid grid-cols-12 gap-5">
@@ -287,6 +293,10 @@ const loadingSummary = ref(false)
 const loadingCharts = ref(false)
 const loadingTranscripts = ref(false)
 const showSubscriptionSuccessModal = ref(false)
+const MESSAGE_EXPIRATION_MS = 43200000 // 12 horas
+const MESSAGE_STORAGE_KEY = 'vitaris_dashboard_message_closed_at'
+const showMessage = ref(false)
+const messageIndex = ref(0)
 const selectedPeriod = ref('today')
 const weekData = ref([0, 0, 0, 0, 0, 0, 0])
 const pieData = ref(null)
@@ -317,12 +327,80 @@ const aiUsage = computed(() => {
     return { transcriptions, discarded, generatedDocuments, utilization, documentsDiscarded }
 })
 
+const dynamicMessages = computed(() => {
+    const savedSeconds = Math.max(0, (8 * 60 * dataSummary.value.transcriptsCountToday) - dataSummary.value.transcriptsDurationToday)
+    const savedTime = convertSecondsToMinutes(savedSeconds)
+    const totalTime = convertSecondsToMinutes(dataSummary.value.transcriptsDurationToday)
+    const count = dataSummary.value.transcriptsCountToday
+    const totalWithTrashed = dataSummary.value.transcriptsCountWithTrashedToday ?? 0
+    const docs = dataSummary.value.documentCountWithTrashehdToday ?? 0
+    const utilization = Number(aiUsage.value.utilization || 0)
+    const avgTime = convertSecondsToMinutes(dataSummary.value.averageTranscriptsTime)
+    const period = periodLabel.value === 'hoje' ? 'no dia' : periodLabel.value
+
+    return [
+        savedSeconds > 60
+            ? `A Vitalfy poupou aproximadamente ${savedTime} do seu tempo ${period}. Continue aproveitando ao máximo!`
+            : null,
+        count > 0
+            ? `Você realizou ${count} ${count === 1 ? 'atendimento' : 'atendimentos'} ${period}, totalizando ${totalTime} de consultas registradas.`
+            : null,
+        docs > 0
+            ? `${docs} ${docs === 1 ? 'documento clínico foi gerado' : 'documentos clínicos foram gerados'} com IA ${period}. Sua documentação nunca foi tão ágil!`
+            : null,
+        utilization >= 80
+            ? `Incrível! Seu aproveitamento da IA está em ${utilization.toFixed(1)}% ${period}. Você está extraindo o máximo da plataforma!`
+            : null,
+        utilization > 0 && utilization < 80
+            ? `Seu aproveitamento da IA está em ${utilization.toFixed(1)}% ${period}. Gere documentos após cada transcrição para turbinar sua produtividade.`
+            : null,
+        count > 1 && dataSummary.value.averageTranscriptsTime > 0
+            ? `Tempo médio por atendimento ${period}: ${avgTime}. Com a Vitalfy, cada consulta é documentada com mais eficiência.`
+            : null,
+        savedSeconds > 0 && count > 1
+            ? `Com ${count} atendimentos registrados, você economizou em média ${convertSecondsToMinutes(Math.floor(savedSeconds / count))} por consulta ${period}.`
+            : null,
+        totalWithTrashed > count && count > 0
+            ? `De ${totalWithTrashed} ${totalWithTrashed === 1 ? 'transcrição realizada' : 'transcrições realizadas'}, você aproveitou ${count} como documento ${period}.`
+            : null,
+    ].filter(Boolean)
+})
+
+const currentMessage = computed(() => dynamicMessages.value[messageIndex.value] ?? null)
+
 const commonOptions = { responsive: true, maintainAspectRatio: false }
+
+const checkMessageVisibility = () => {
+    const closedAt = localStorage.getItem(MESSAGE_STORAGE_KEY)
+    if (!closedAt) {
+        showMessage.value = true
+        return
+    }
+    const elapsed = Date.now() - Number(closedAt)
+    if (elapsed >= MESSAGE_EXPIRATION_MS) {
+        showMessage.value = true
+        localStorage.removeItem(MESSAGE_STORAGE_KEY)
+    } else {
+        showMessage.value = false
+    }
+}
+
+const handleMessageClose = () => {
+    localStorage.setItem(MESSAGE_STORAGE_KEY, String(Date.now()))
+    showMessage.value = false
+}
 
 const getSummary = () => {
     loadingSummary.value = true
     DashboardService.summary(selectedPeriod.value)
-        .then(response => { dataSummary.value = response })
+        .then(response => {
+            dataSummary.value = response
+            const msgs = dynamicMessages.value
+            
+            if (msgs.length > 0) {
+                messageIndex.value = Math.floor(Math.random() * msgs.length)
+            }
+        })
         .finally(() => { loadingSummary.value = false })
 }
 
@@ -459,6 +537,7 @@ const checkCheckoutStatus = async () => {
 };
 
 onMounted(() => {
+    checkMessageVisibility()
     getSummary()
     getLatestRecentTranscripts()
     getCharts()

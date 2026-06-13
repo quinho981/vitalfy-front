@@ -13,15 +13,15 @@
     >
         <template #header>
             <div class="flex items-center gap-x-3">
-                <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-blue-100 dark:bg-blue-500/10">
-                    <ScrollText :size="18" class="text-blue-600 dark:text-blue-400" />
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-emerald-50 dark:bg-green-500/10">
+                    <ShieldCheck :size="18" class="text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <div>
                     <p class="text-sm font-semibold text-surface-800 dark:text-surface-200 leading-tight">
-                        {{ $t("termOfUse") }}
+                        {{ $t("privacyPolicy") }}
                     </p>
                     <p class="text-xs text-surface-400 mt-0.5">
-                        Leia com atenção antes de utilizar a plataforma
+                        Como tratamos e protegemos os seus dados pessoais
                     </p>
                 </div>
             </div>
@@ -39,8 +39,8 @@
                 <button
                     @click="close"
                     class="px-5 py-2 rounded-lg text-sm font-semibold transition-colors
-                           bg-blue-500 text-white hover:bg-blue-600
-                           dark:bg-blue-600 dark:hover:bg-blue-700"
+                           bg-emerald-600 text-white hover:bg-emerald-700
+                           dark:bg-emerald-700 dark:hover:bg-emerald-800"
                 >
                     {{ $t("button.close") }}
                 </button>
@@ -52,8 +52,8 @@
 <script setup>
 import { computed } from "vue";
 import { marked } from "marked";
-import { ScrollText } from 'lucide-vue-next';
-import terms from '@/assets/terms.md?raw';
+import { ShieldCheck } from 'lucide-vue-next';
+import privacy from '@/assets/privacy.md?raw';
 
 const emit = defineEmits(['close']);
 
@@ -70,7 +70,7 @@ const updateVisibility = (value) => {
     if (!value) close();
 };
 
-const htmlContent = marked(terms);
+const htmlContent = marked(privacy);
 
 const close = () => emit('close', false);
 </script>

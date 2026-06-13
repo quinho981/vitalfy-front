@@ -1,7 +1,8 @@
 {
     "app_name": "Vitalfy",
     "welcome": "Welcome",
-    "termOfUse": "Term of use",
+    "termOfUse": "Terms of Use",
+    "privacyPolicy": "Privacy Policy",
     "newConsultation": "Nova consulta",
     "button": {
         "accept": "Accept",
@@ -37,7 +38,7 @@
             "passwordUppercase": "Password must contain at least one uppercase letter",
             "passwordLowercase": "Password must contain at least one lowercase letter",
             "passwordNumber": "Password must contain at least one number",
-            "acceptTerms": "You must accept the terms of use",
+            "acceptTerms": "You must accept the Terms of Use and Privacy Policy",
             "passwordDontMatch": "Passwords don't match"
         }
     },
@@ -49,8 +50,10 @@
                 "rememberMe": "Remember me",
                 "forgotPassword": "Forgot password",
                 "haveAnAccount": "Don't have an account?",
-                "declareTermsParcial": "I declare and certify that i am over 18 years old and accept the",
-                "terms": "terms of use",
+                "declareTermsParcial": "I declare and certify that I am over 18 years old and accept the",
+                "terms": "Terms of Use",
+                "declareTermsAnd": "and the",
+                "privacyPolicy": "Privacy Policy",
                 "alredyHaveAnAccount": "Already have an account?",
                 "enterName": "Enter your name",
                 "enterEmail": "Enter your email",

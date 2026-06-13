@@ -114,6 +114,14 @@
                                     >
                                         {{ $t("auth.form.label.terms") }}
                                     </a>
+                                    {{ $t("auth.form.label.declareTermsAnd") }}
+                                    <a
+                                        href="#"
+                                        @click.prevent="showPrivacy"
+                                        class="text-primary font-medium hover:underline"
+                                    >
+                                        {{ $t("auth.form.label.privacyPolicy") }}
+                                    </a>
                                 </span>
                             </label>
 
@@ -148,6 +156,10 @@
             :active="activeTerms" 
             @close="closeTerms" 
         />
+        <PrivacyPolicy
+            :active="activePrivacy"
+            @close="closePrivacy"
+        />
     </div>
 </template>
 
@@ -158,6 +170,7 @@ import AsideImage from './components/AsideImage.vue'
 import { registerSchema } from '@/validations/authSchema.js';
 import { useRouter } from 'vue-router';
 import TermOfUse from '@/components/Modal/TermOfUse.vue';
+import PrivacyPolicy from '@/components/Modal/PrivacyPolicy.vue';
 import { useShowToast } from '@/utils/useShowToast';
 import { useI18n } from 'vue-i18n';
 
@@ -170,6 +183,7 @@ const auth = authStore();
 const router = useRouter();
 const loading = ref(false)
 const activeTerms = ref(false)
+const activePrivacy = ref(false)
 const errors = ref({});
 
 const form = ref({
@@ -220,6 +234,14 @@ const showTerms = () => {
 
 const closeTerms = () => {
     activeTerms.value = false;
+}
+
+const showPrivacy = () => {
+    activePrivacy.value = true;
+}
+
+const closePrivacy = () => {
+    activePrivacy.value = false;
 }
 </script>
 

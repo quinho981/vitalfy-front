@@ -13,7 +13,7 @@ export const registerSchema = z.object({
         .regex(/[0-9]/, 'A senha deve conter pelo menos um número'),
     password_confirmation: z.string(),
     checked: z.boolean().refine(val => val === true, {
-        message: 'Você deve aceitar os termos de uso'
+        message: 'Você deve aceitar os Termos de Uso e a Política de Privacidade',
     })
 }).refine((data) => data.password === data.password_confirmation, {
     message: "As senhas não coincidem",

@@ -1,7 +1,8 @@
 {
     "app_name": "Vitalfy",
     "welcome": "Bem-vindo",
-    "termOfUse": "Termo de uso",
+    "termOfUse": "Termo de Uso",
+    "privacyPolicy": "Política de Privacidade",
     "newConsultation": "Nova consulta",
     "button": {
         "accept": "Aceitar",
@@ -37,7 +38,7 @@
             "passwordUppercase": "A senha deve conter pelo menos uma letra maiúscula",
             "passwordLowercase": "A senha deve conter pelo menos uma letra minúscula",
             "passwordNumber": "A senha deve conter pelo menos um número",
-            "acceptTerms": "Você deve aceitar os termos de uso",
+            "acceptTerms": "Você deve aceitar os Termos de Uso e a Política de Privacidade",
             "passwordDontMatch": "As senhas não coincidem"
         }
     },
@@ -50,7 +51,9 @@
                 "forgotPassword": "Esqueceu a senha",
                 "haveAnAccount": "Não tem uma conta?",
                 "declareTermsParcial": "Declaro e certifico que tenho mais de 18 anos e aceito os",
-                "terms": "termos de uso",
+                "terms": "Termos de Uso",
+                "declareTermsAnd": "e a",
+                "privacyPolicy": "Política de Privacidade",
                 "alredyHaveAnAccount": "Já possui uma conta?",
                 "enterName": "Digite seu nome",
                 "enterEmail": "Digite seu e-mail",

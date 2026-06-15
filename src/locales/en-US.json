@@ -63,7 +63,9 @@
             "button": {
                 "signIn": "Sign In",
                 "signUp": "Sign Up",
-                "registerNow": "Register now"
+                "registerNow": "Register now",
+                "sendResetLink": "Send reset link",
+                "resetPassword": "Reset password"
             }
         },
         "login": {
@@ -71,6 +73,22 @@
         },
         "register": {
             "title": "Create your account"
+        },
+        "forgotPassword": {
+            "title": "Forgot your password?",
+            "description": "Enter your account email and we will send a link to reset your password.",
+            "emailSentTitle": "Email sent!",
+            "emailSentDescription": "If this address is registered, you will receive instructions shortly. Check your spam folder too.",
+            "backToLogin": "Back to login",
+            "tryAnotherEmail": "Try another email"
+        },
+        "resetPassword": {
+            "title": "Reset password",
+            "description": "Create a new secure password for your account.",
+            "newPassword": "New password",
+            "confirmNewPassword": "Confirm new password",
+            "invalidToken": "This reset link is invalid or has expired.",
+            "requestNewLink": "Request new link"
         }
     },
     "notifications": {
@@ -95,7 +113,9 @@
             "userCreatedSuccessfully": "User created successfully",
             "userCreatingError": "Error creating user",
             "editSuccessfully": "Edit made successfully",
-            "editError": "Error making the edit"
+            "editError": "Error making the edit",
+            "passwordResetSuccess": "Password reset successfully",
+            "passwordResetError": "Unable to reset password. Please try again."
         }
     },
     "transcription": {

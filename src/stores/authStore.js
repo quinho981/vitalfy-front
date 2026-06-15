@@ -57,6 +57,16 @@ export const authStore = defineStore('auth', () => {
         }
     }
 
+    const forgotPassword = async (email) => {
+        const response = await api.post('/forgot-password', { email })
+        return response.data
+    }
+
+    const resetPassword = async (payload) => {
+        const response = await api.post('/reset-password', payload)
+        return response.data
+    }
+
     const isAuthenticated = computed(() => !!token.value)
 
     return {
@@ -64,6 +74,8 @@ export const authStore = defineStore('auth', () => {
         register,
         login,
         logout,
+        forgotPassword,
+        resetPassword,
         isAuthenticated
     }
 })

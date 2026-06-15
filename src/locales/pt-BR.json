@@ -63,7 +63,9 @@
             "button": {
                 "signIn": "Entrar",
                 "signUp": "Cadastrar-se",
-                "registerNow": "Registre-se agora"
+                "registerNow": "Registre-se agora",
+                "sendResetLink": "Enviar link de redefinição",
+                "resetPassword": "Redefinir senha"
             }
         },
         "login": {
@@ -71,6 +73,22 @@
         },
         "register": {
             "title": "Crie sua conta"
+        },
+        "forgotPassword": {
+            "title": "Esqueceu sua senha?",
+            "description": "Informe o e-mail da sua conta e enviaremos um link para redefinir sua senha.",
+            "emailSentTitle": "E-mail enviado!",
+            "emailSentDescription": "Se este endereço estiver cadastrado, você receberá as instruções em breve. Verifique também sua caixa de spam.",
+            "backToLogin": "Voltar para o login",
+            "tryAnotherEmail": "Tentar com outro e-mail"
+        },
+        "resetPassword": {
+            "title": "Redefinir senha",
+            "description": "Crie uma nova senha segura para sua conta.",
+            "newPassword": "Nova senha",
+            "confirmNewPassword": "Confirmar nova senha",
+            "invalidToken": "Este link de redefinição é inválido ou expirou.",
+            "requestNewLink": "Solicitar novo link"
         }
     },
     "notifications": {
@@ -95,7 +113,9 @@
             "userCreatedSuccessfully": "Usuário criado com sucesso",
             "userCreatingError": "Erro ao criar o usuário",
             "editSuccessfully": "Edição realizada com sucesso",
-            "editError": "Erro ao realizar a edição"
+            "editError": "Erro ao realizar a edição",
+            "passwordResetSuccess": "Senha redefinida com sucesso",
+            "passwordResetError": "Não foi possível redefinir a senha. Tente novamente."
         }
     },
     "transcription": {

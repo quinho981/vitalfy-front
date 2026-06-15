@@ -73,9 +73,12 @@
                                 {{ $t("auth.form.label.rememberMe") }}
                             </label>
 
-                            <a href="#" class="text-primary hover:underline font-medium">
+                            <router-link
+                                :to="{ name: 'forgotPassword' }"
+                                class="text-primary hover:underline font-medium"
+                            >
                                 {{ $t("auth.form.label.forgotPassword") }}?
-                            </a>
+                            </router-link>
                         </div>
 
                         <Button 

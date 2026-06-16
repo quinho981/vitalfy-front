@@ -65,9 +65,9 @@
 
                         <div class="flex items-center justify-between text-sm">
                             <label class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-                                <Checkbox 
-                                    v-model="form.checked" 
-                                    id="rememberme" 
+                                <Checkbox
+                                    v-model="form.remember"
+                                    id="rememberme"
                                     binary
                                 />
                                 {{ $t("auth.form.label.rememberMe") }}
@@ -120,7 +120,7 @@ const errorMessage = ref(false);
 const form = ref({
     email: '',
     password: '',
-    checked: false
+    remember: false
 })
 
 const submit = async () => {

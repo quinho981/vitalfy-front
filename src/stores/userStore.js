@@ -14,29 +14,32 @@ export const useUserStore = defineStore('user', () => {
     const recordingTourCompleted = ref(localStorage.getItem('recording_tour_completed') === 'true')
 
     const getUserInfo = async () => {
-        const token = Cookies.get('token')
+        const token      = Cookies.get('token')
+        const rememberMe = Cookies.get('remember') === 'true'
+        const cookieOpts = rememberMe ? { expires: 30 } : {}
+
         try {
             const response = await api.get('/user', {
                 headers: { Authorization: `Bearer ${token}` }
             })
 
-            userId.value = response.data.user.id
-            username.value = response.data.user.name
-            userEmail.value = response.data.user.email
-            userPhone.value = response.data.user.phone
-            plan.value = response.data.plan.name
-            active.value = response.data.plan.name !== 'Free'
-            remaining.value = response.data.remaining
+            userId.value               = response.data.user.id
+            username.value             = response.data.user.name
+            userEmail.value            = response.data.user.email
+            userPhone.value            = response.data.user.phone
+            plan.value                 = response.data.plan.name
+            active.value               = response.data.plan.name !== 'Free'
+            remaining.value            = response.data.remaining
             recordingTourCompleted.value = response.data.user.recording_tour_completed || false
 
-            Cookies.set('id', userId.value)
-            Cookies.set('username', username.value)
-            Cookies.set('user_email', userEmail.value)
-            Cookies.set('user_phone', userPhone.value || '')
-            Cookies.set('plan', plan.value)
-            Cookies.set('active', active.value)
-            localStorage.setItem('remaining', remaining.value)
-            localStorage.setItem('recording_tour_completed', recordingTourCompleted.value)
+            Cookies.set('id',         userId.value,        cookieOpts)
+            Cookies.set('username',   username.value,      cookieOpts)
+            Cookies.set('user_email', userEmail.value,     cookieOpts)
+            Cookies.set('user_phone', userPhone.value || '', cookieOpts)
+            Cookies.set('plan',       plan.value,          cookieOpts)
+            Cookies.set('active',     active.value,        cookieOpts)
+            localStorage.setItem('remaining',                  remaining.value)
+            localStorage.setItem('recording_tour_completed',   recordingTourCompleted.value)
 
             return response.data
         } catch (error) {

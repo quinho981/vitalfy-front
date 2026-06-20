@@ -66,6 +66,14 @@ export const authStore = defineStore('auth', () => {
         }
     }
 
+    const setToken = (value, rememberMe = true) => {
+        token.value    = value
+        remember.value = rememberMe
+        const cookieOptions = rememberMe ? { expires: REMEMBER_DAYS } : {}
+        Cookies.set('token',    value,              cookieOptions)
+        Cookies.set('remember', String(rememberMe), cookieOptions)
+    }
+
     const forgotPassword = async (email) => {
         const response = await api.post('/forgot-password', { email })
         return response.data
@@ -84,6 +92,7 @@ export const authStore = defineStore('auth', () => {
         register,
         login,
         logout,
+        setToken,
         forgotPassword,
         resetPassword,
         isAuthenticated

@@ -50,6 +50,8 @@
                 "rememberMe": "Remember me",
                 "forgotPassword": "Forgot password",
                 "haveAnAccount": "Don't have an account?",
+                "orContinueWith": "or continue with",
+                "continueWithGoogle": "Continue with Google",
                 "declareTermsParcial": "I declare and certify that I am over 18 years old and accept the",
                 "terms": "Terms of Use",
                 "declareTermsAnd": "and the",
@@ -73,6 +75,10 @@
         },
         "register": {
             "title": "Create your account"
+        },
+        "socialCallback": {
+            "loading": "Authenticating with Google...",
+            "error": "Unable to authenticate with Google. Please try again."
         },
         "forgotPassword": {
             "title": "Forgot your password?",

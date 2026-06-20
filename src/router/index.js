@@ -93,6 +93,11 @@ const router = createRouter({
                     name: 'resetPassword',
                     component: () => import('@/views/pages/auth/ResetPassword.vue')
                 },
+                {
+                    path: '/auth/social-callback',
+                    name: 'socialCallback',
+                    component: () => import('@/views/pages/auth/SocialCallback.vue')
+                },
             ]
         },
         {

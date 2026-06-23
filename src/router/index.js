@@ -56,6 +56,12 @@ const router = createRouter({
                     component: () => import('@/views/settings/index.vue'),
                     meta: { requiresAuth: true }
                 },
+                {
+                    path: '/subscription',
+                    name: 'subscription',
+                    component: () => import('@/views/subscription/SubscriptionView.vue'),
+                    meta: { requiresAuth: true }
+                },
             ]
         },
         {
@@ -97,6 +103,11 @@ const router = createRouter({
                     path: '/auth/social-callback',
                     name: 'socialCallback',
                     component: () => import('@/views/pages/auth/SocialCallback.vue')
+                },
+                {
+                    path: '/auth/email-verified',
+                    name: 'emailVerified',
+                    component: () => import('@/views/pages/auth/EmailVerified.vue')
                 },
             ]
         },

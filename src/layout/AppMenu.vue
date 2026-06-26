@@ -8,12 +8,25 @@ import { CircleQuestionMark, Plus } from 'lucide-vue-next';
 import api from '@/services/axios';
 import Cookies from 'js-cookie';
 import { useHelpers } from '@/utils/helper';
+import { FREE_TRANSCRIPT_LIMIT } from '@/utils/constants';
 
 const { getNextMonthResetDate } = useHelpers();
 const userStore = useUserStore();
 const router = useRouter();
 
 const FREE_PLAN = 'Free';
+
+const usedCount = computed(() => {
+    const remaining = parseInt(userStore.remaining)
+    return isNaN(remaining) ? 0 : Math.max(0, FREE_TRANSCRIPT_LIMIT - remaining)
+})
+const progressPercent = computed(() => Math.min((usedCount.value / FREE_TRANSCRIPT_LIMIT) * 100, 100))
+const progressBarColor = computed(() => {
+    const remaining = parseInt(userStore.remaining)
+    if (isNaN(remaining) || remaining > 3) return 'bg-blue-400'
+    if (remaining > 1) return 'bg-amber-400'
+    return 'bg-red-500'
+})
 const modalHelpAndSupport = ref(false);
 const modalSignatureActive = ref(false);
 const isSubscribing = ref(false);
@@ -142,6 +155,16 @@ const handleSubscribe = async (plan) => {
                                 <p v-else class="text-[11px] leading-tight mt-0.5 m-0 text-slate-500 dark:text-slate-400">Seu limite renova em {{ getNextMonthResetDate() }}</p>
                             </div>
                         </div>
+                        <div class="mt-2 w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
+                            <div
+                                class="h-1.5 rounded-full transition-all duration-300"
+                                :class="progressBarColor"
+                                :style="{ width: progressPercent + '%' }"
+                            ></div>
+                        </div>
+                        <p class="text-[10px] mt-1 m-0 text-slate-400 dark:text-slate-500">
+                            {{ usedCount }} de {{ FREE_TRANSCRIPT_LIMIT }} usadas este mês
+                        </p>
                     </button>
                 </div>
 

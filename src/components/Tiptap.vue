@@ -71,10 +71,12 @@
                 v-if="allowRefine"
                 @click="$emit('open-refine-modal')"
                 class="ml-auto flex items-center px-4 py-2 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full text-[13.5px] font-semibold text-white hover:opacity-90 transition"
-                :class=" hasUnsavedChanges ? '' : 'mr-3'"
+                :class="hasUnsavedChanges ? '' : 'mr-3'"
             >
-                <Sparkles :size="16" class="mr-2" />
+                <Lock v-if="!isPro" :size="13" class="mr-1.5 opacity-90" />
+                <Sparkles v-else :size="16" class="mr-2" />
                 Refinar anamnese
+                <span v-if="!isPro" class="ml-2 px-1.5 py-0.5 text-[9px] font-bold bg-yellow-400 text-yellow-900 rounded-full leading-none">PRO</span>
             </button>
             <button
                 v-if="hasUnsavedChanges && allowRefine"
@@ -93,7 +95,7 @@
 
 <script setup>
 import { markRaw, onBeforeUnmount, onMounted, ref, shallowRef, watch, computed } from 'vue';
-import { Heading1, Heading2, Heading3, Bold as BoldIcon, Italic as ItalicIcon, List, ListOrdered, Undo, Redo, Sparkles, Save, Loader2 } from 'lucide-vue-next';
+import { Heading1, Heading2, Heading3, Bold as BoldIcon, Italic as ItalicIcon, List, ListOrdered, Undo, Redo, Sparkles, Save, Loader2, Lock } from 'lucide-vue-next';
 
 const props = defineProps({
     content: {
@@ -101,6 +103,10 @@ const props = defineProps({
         required: true
     },
     allowRefine: {
+        type: Boolean,
+        default: true
+    },
+    isPro: {
         type: Boolean,
         default: true
     },

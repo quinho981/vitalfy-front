@@ -4,4 +4,6 @@ const AUDIO_CONFIG = {
     ALLOWED_EXTENSIONS: ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'flac', 'mpeg', 'webm']
 }
 
-export { AUDIO_CONFIG }
+const FREE_TRANSCRIPT_LIMIT = 10
+
+export { AUDIO_CONFIG, FREE_TRANSCRIPT_LIMIT }

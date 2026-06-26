@@ -163,7 +163,8 @@
                                         :key="tiptapKey"
                                         :content="documentContent"
                                         :isSaving="isSaving"
-                                        @open-refine-modal="showRefineModal = true"
+                                        :isPro="userStore.plan !== 'Free'"
+                                        @open-refine-modal="handleRefineModalOpen"
                                         @save="handleSaveDocument"
                                     />
                                 </div>
@@ -259,13 +260,19 @@
                 </div>
             </div>
         </section>
-        <RefineAnamnesis 
+        <RefineAnamnesis
             :showRefineModal="showRefineModal"
             :patientName="patient"
             :content="documentContent"
             :documentId="documentId"
             @close="showRefineModal = false"
             @apply-refined="updateContent"
+        />
+        <Signature
+            :active="showUpgradeModal"
+            :loading="upgradeLoading"
+            @close="showUpgradeModal = false"
+            @subscribe="handleUpgradeSubscribe"
         />
     </div>
 </template>
@@ -279,13 +286,16 @@ import { useRoute, useRouter } from "vue-router";
 import { useShowToast } from '@/utils/useShowToast';
 import { useHelpers } from '@/utils/helper';
 import { useI18n } from 'vue-i18n';
+import { useUserStore } from '@/stores/userStore';
 
 const Tiptap = defineAsyncComponent(() => import('@/components/Tiptap.vue'));
 const RefineAnamnesis = defineAsyncComponent(() => import('@/components/Modal/RefineAnamnesis.vue'));
+const Signature = defineAsyncComponent(() => import('@/components/Modal/Signature.vue'));
 
 const { t } = useI18n();
 const { showSuccess, showError } = useShowToast();
 const { formatPtBrCurto, convertSecondsToMinutes, capitalizeArray } = useHelpers();
+const userStore = useUserStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -302,6 +312,8 @@ const loadingTranscript = ref(false);
 const loadingConversations = ref(false);
 const documentId = ref();
 const showRefineModal = ref(false);
+const showUpgradeModal = ref(false);
+const upgradeLoading = ref(false);
 const tiptapKey = ref(0); // key responsável pela renderização do tiptap, necessário para atualizar o conteúdo após refinamento
 const isSaving = ref(false);
 const medicalAnalysis = ref({
@@ -458,6 +470,27 @@ const handleInsightMessage = (event) => {
 const updateContent = (content) => {
     documentContent.value = content
     tiptapKey.value++;
+}
+
+const handleRefineModalOpen = () => {
+    if (userStore.plan === 'Free') {
+        showUpgradeModal.value = true
+    } else {
+        showRefineModal.value = true
+    }
+}
+
+const handleUpgradeSubscribe = async (plan) => {
+    upgradeLoading.value = true
+    try {
+        const { SubscriptionService } = await import('@/service/SubscriptionService')
+        const response = await SubscriptionService.createCheckout(plan)
+        window.location.href = response.url
+    } catch (error) {
+        showError(t('notifications.titles.error'), 'Erro ao iniciar assinatura. Tente novamente!', 3000)
+    } finally {
+        upgradeLoading.value = false
+    }
 }
 
 const handleSSEError = (error) => {

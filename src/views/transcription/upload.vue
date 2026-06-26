@@ -4,6 +4,19 @@
             <h1 class="text-3xl font-bold">Novo atendimento</h1>
             <p class="my-1 text-lg text-surface-500">Grave ou envie o áudio da consulta para gerar automaticamente o documento clínico e os insights</p>
         </div>
+        <UpgradeBanner
+            v-if="showWarningBanner"
+            variant="warning"
+            :reset-date="getNextMonthResetDate()"
+            @upgrade="showSignatureModal = true"
+            @dismiss="bannerDismissed = true"
+        />
+        <UpgradeBanner
+            v-else-if="showCriticalBanner"
+            variant="critical"
+            :reset-date="getNextMonthResetDate()"
+            @upgrade="showSignatureModal = true"
+        />
         <div class="flex gap-x-5 flex-wrap md:flex-nowrap">
             <div class="card w-full md:w-1/2 flex flex-col gap-y-4 mb-5 md:mb-0">
                 <SelectButtonMode 
@@ -154,6 +167,7 @@
                             ref="submitBtn"
                             @click="transcribeAudio"
                             :disabled="!selectedFile || isTranscribing || loadingTranscribeAndGenerate"
+                            v-tooltip.top="isLimitReached ? 'Você atingiu o limite mensal. Faça upgrade para continuar.' : null"
                             outlined
                             severity="secondary"
                             class="transcription-button !border-blue-500 !text-blue-500 !bg-white !rounded-lg font-semibold hover:!bg-blue-50 dark:!bg-surface-800 dark:hover:!bg-surface-700"
@@ -165,6 +179,7 @@
                         <Button
                             @click="transcribeAndGenerateDocument"
                             :disabled="!selectedFile || isTranscribing || loadingTranscribeAndGenerate"
+                            v-tooltip.top="isLimitReached ? 'Você atingiu o limite mensal. Faça upgrade para continuar.' : null"
                             class="transcribe-and-generate-button !bg-gradient-to-br !from-blue-500 !to-blue-700 !border-none !text-white !rounded-lg font-semibold hover:!from-blue-600 hover:!to-blue-800"
                         >
                             <Loader2 v-if="loadingTranscribeAndGenerate" :size="16" class="animate-spin mr-2" />
@@ -221,11 +236,17 @@
             :auto-start="true"
             @tour-complete="onTourComplete"
         />
+        <UpgradeReminderToast
+            :visible="showUpgradeToast"
+            :remaining="parseInt(userStore.remaining)"
+            @close="showUpgradeToast = false"
+            @upgrade="handleToastUpgrade"
+        />
     </section>
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { Upload, FileVolume, Loader2, FilePlus, MessagesSquare, HelpCircle } from 'lucide-vue-next';
 import { AnamneseService } from '@/service/AnamneseService';
 import { TranscriptsService } from '@/service/TranscriptsService';
@@ -237,12 +258,14 @@ import { useRouter, useRoute } from "vue-router";
 import { useHelpers } from '@/utils/helper';
 import { useUserStore } from '@/stores/userStore'
 import { AUDIO_CONFIG } from '@/utils/constants'
+import UpgradeReminderToast from '@/components/UploadPage/UpgradeReminderToast.vue'
+import UpgradeBanner from '@/components/UploadPage/UpgradeBanner.vue'
 
 const router = useRouter();
 const route = useRoute();
 const { t } = useI18n();
 const { showSuccess, showError, showAttention } = useShowToast();
-const { formatSize } = useHelpers();
+const { formatSize, getNextMonthResetDate } = useHelpers();
 const userStore = useUserStore()
 
 const inputMode = ref('record')
@@ -272,6 +295,12 @@ const submitBtn = ref(null)
 const pendingInputMode = ref(null);
 const showSignatureModal = ref(false)
 const signatureLoading = ref(false)
+const showUpgradeToast = ref(false)
+const bannerDismissed = ref(false)
+
+const isLimitReached = computed(() => parseInt(userStore.remaining) <= 0 && userStore.plan === 'Free')
+const showWarningBanner = computed(() => parseInt(userStore.remaining) === 1 && userStore.plan === 'Free' && !bannerDismissed.value)
+const showCriticalBanner = computed(() => parseInt(userStore.remaining) <= 0 && userStore.plan === 'Free')
 
 const scrollAfterRecordingStart = () => {
     nextTick(() => {
@@ -371,6 +400,10 @@ const transcriptId = ref()
 const transcribeAudio = async () => {
     if (!validateForm()) return;
     if (!hasSelectedFile()) return;
+    if (isLimitReached.value) {
+        showSignatureModal.value = true
+        return
+    }
 
     isTranscribing.value = true;
 
@@ -393,6 +426,7 @@ const transcribeAudio = async () => {
             transcriptions.value.unshift(processedTranscription);
 
             setUsageOnStorage(response.data.remaining)
+            triggerUpgradeToastIfNeeded(response.data.remaining)
 
             selectedFile.value = null;
             uploader.value?.clear();
@@ -402,7 +436,7 @@ const transcribeAudio = async () => {
         .catch(error => {
             if (error.response?.status === 429) {
                 showSignatureModal.value = true
-                showAttention('Atenção', 'Você usou todas as transcrições gratuitas', 7000);
+                showAttention('Atenção', 'Limite de transcrições atingido. Faça upgrade para continuar.', 5000);
             } else {
                 showError('Erro', 'Erro ao transcrever o áudio.', 3000);
             }
@@ -413,15 +447,29 @@ const transcribeAudio = async () => {
 };
 
 const setUsageOnStorage = (remaining) => {
-    if(remaining == null) return;
-
+    if (remaining == null) return;
     userStore.remaining = remaining
-    localStorage.setItem('remaining',  remaining)
+    localStorage.setItem('remaining', remaining)
+}
+
+const triggerUpgradeToastIfNeeded = (remaining) => {
+    if (parseInt(remaining) <= 2 && parseInt(remaining) > 0 && userStore.plan === 'Free') {
+        showUpgradeToast.value = true
+    }
+}
+
+const handleToastUpgrade = () => {
+    showUpgradeToast.value = false
+    showSignatureModal.value = true
 }
 
 const transcribeAndGenerateDocument = async () => {
     if (!validateForm()) return;
     if (!hasSelectedFile()) return;
+    if (isLimitReached.value) {
+        showSignatureModal.value = true
+        return
+    }
 
     loadingTranscribeAndGenerate.value = true;
 
@@ -449,7 +497,7 @@ const transcribeAndGenerateDocument = async () => {
         loadingTranscribeAndGenerate.value = false
         if (error.response?.status === 429) {
             showSignatureModal.value = true
-            showAttention('Atenção', 'Você usou todas as transcrições gratuitas', 7000);
+            showAttention('Atenção', 'Limite de transcrições atingido. Faça upgrade para continuar.', 5000);
         } else {
             showError('Erro', 'Erro ao transcrever o áudio.', 3000);
         }

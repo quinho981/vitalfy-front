@@ -42,15 +42,12 @@
             </div>
         </div>
 
-        <Message
-            v-if="showMessage && currentMessage"
-            severity="success"
-            closable
-            class="mb-5"
-            @close="handleMessageClose"
-        >
-            {{ currentMessage }}
-        </Message>
+        <SuccessBanner
+            v-if="(showMessage && currentMessage)"
+            :loading="loadingSummary"
+            :message="currentMessage"
+            @dismiss="handleMessageClose"
+        />
 
         <div class="grid grid-cols-12 gap-5">
             <div class="col-span-12 md:col-span-6 xl:col-span-3">
@@ -280,6 +277,7 @@ import { Mic, FileText, Clock, OctagonAlert, Timer, Sparkles, TrendingUp, PieCha
 import { useHelpers } from '@/utils/helper'
 import ChartLite from '@/components/ChartLite.vue'
 import SubscriptionSuccessModal from '@/components/Modal/SubscriptionSuccessModal.vue'
+import SuccessBanner from '@/components/SuccessBanner.vue'
 
 const ProgressSpinner = defineAsyncComponent(() => import('primevue/progressspinner'))
 
@@ -294,7 +292,7 @@ const loadingCharts = ref(false)
 const loadingTranscripts = ref(false)
 const showSubscriptionSuccessModal = ref(false)
 const MESSAGE_EXPIRATION_MS = 43200000 // 12 horas
-const MESSAGE_STORAGE_KEY = 'vitaris_dashboard_message_closed_at'
+const MESSAGE_STORAGE_KEY = 'dashboard_message_closed_at'
 const showMessage = ref(false)
 const messageIndex = ref(0)
 const selectedPeriod = ref('today')

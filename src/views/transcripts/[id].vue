@@ -167,6 +167,34 @@
                                         @open-refine-modal="handleRefineModalOpen"
                                         @save="handleSaveDocument"
                                     />
+                                    <div 
+                                        v-if="documentFeedback == null"
+                                        class="flex items-center justify-center gap-3 mt-6"
+                                    >
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Este documento foi útil?</p>
+                                        <button
+                                            @click="handleFeedback('positive')"
+                                            :disabled="submittingFeedback"
+                                            class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-sm font-medium transition-all duration-200"
+                                            :class="documentFeedback === 'positive'
+                                                ? 'bg-green-100 border-green-400 text-green-700 dark:bg-green-900/40 dark:border-green-600 dark:text-green-400'
+                                                : 'border-slate-200 hover:bg-gray-100 dark:border-neutral-700 dark:hover:bg-neutral-800'"
+                                        >
+                                            <ThumbsUp :size="14" />
+                                            Útil
+                                        </button>
+                                        <button
+                                            @click="handleFeedback('negative')"
+                                            :disabled="submittingFeedback"
+                                            class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-sm font-medium transition-all duration-200"
+                                            :class="documentFeedback === 'negative'
+                                                ? 'bg-red-100 border-red-400 text-red-700 dark:bg-red-900/40 dark:border-red-600 dark:text-red-400'
+                                                : 'border-slate-200 hover:bg-gray-100 dark:border-neutral-700 dark:hover:bg-neutral-800'"
+                                        >
+                                            <ThumbsDown :size="14" />
+                                            Melhorar
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -279,7 +307,7 @@
 
 <script setup>
 import { defineAsyncComponent, ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
-import { User, Calendar, Clock, Share2, Download, BrainCircuit, LayoutTemplate, Loader2, Copy, RefreshCw } from 'lucide-vue-next';
+import { User, Calendar, Clock, Share2, Download, BrainCircuit, LayoutTemplate, Loader2, Copy, RefreshCw, ThumbsUp, ThumbsDown } from 'lucide-vue-next';
 import { TranscriptsService } from '@/service/TranscriptsService';
 import { AnamneseService } from '@/service/AnamneseService';
 import { useRoute, useRouter } from "vue-router";
@@ -329,6 +357,8 @@ const medicalAnalysis = ref({
 const sseFailed = ref(false);
 const sseAttempted = ref(false);
 const regeneratingInsights = ref(false);
+const documentFeedback = ref(null);
+const submittingFeedback = ref(false);
 
 let eventSource = null;
 
@@ -350,6 +380,7 @@ const showTranscript = async (id) => {
         duration.value = convertSecondsToMinutes(response.end_conversation_time)
         documentContent.value = response.document.result;
         documentId.value = response.document.id;
+        documentFeedback.value = response.document.feedback ?? null;
         if(response.document?.ai_insights) {
             const ai = response.document.ai_insights
 
@@ -512,15 +543,29 @@ const regenerateInsights = async () => {
     }
 }
 
+const handleFeedback = async (value) => {
+    const newFeedback = documentFeedback.value === value ? null : value;
+    submittingFeedback.value = true;
+    try {
+        await AnamneseService.update(documentId.value, { feedback: newFeedback });
+        showSuccess(t('notifications.titles.success'), 'Feedback registrado com sucesso!', 4000);
+        documentFeedback.value = newFeedback;
+    } catch (error) {
+        showError(t('notifications.titles.error'), 'Erro ao registrar feedback. Tente novamente!', 4000);
+    } finally {
+        submittingFeedback.value = false;
+    }
+}
+
 const handleSaveDocument = async (content) => {
     isSaving.value = true;
     try {
-        await AnamneseService.update(documentId.value, content);
+        await AnamneseService.update(documentId.value, { result: content});
         documentContent.value = content;
         tiptapKey.value++;
-        showSuccess(t('notifications.titles.success'), 'Documento salvo com sucesso!', 3000);
+        showSuccess(t('notifications.titles.success'), 'Documento salvo com sucesso!', 4000);
     } catch (error) {
-        showError(t('notifications.titles.error'), 'Erro ao salvar documento. Tente novamente!', 3000);
+        showError(t('notifications.titles.error'), 'Erro ao salvar documento. Tente novamente!', 4000);
     } finally {
         isSaving.value = false;
     }

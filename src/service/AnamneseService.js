@@ -44,7 +44,7 @@ export const AnamneseService = {
     async update(documentId, content) {
         const token = Cookies.get('token');
         try {
-            const response = await api.put(`/documents/${documentId}`, { result: content }, {
+            const response = await api.put(`/documents/${documentId}`, content, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

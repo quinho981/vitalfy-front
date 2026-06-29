@@ -175,7 +175,7 @@ const props = defineProps({
         required: true
     },
     documentId: {
-        type: Number,
+        type: String,
         required: true
     }
 }); 

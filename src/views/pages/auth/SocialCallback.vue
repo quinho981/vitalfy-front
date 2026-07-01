@@ -27,27 +27,22 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { authStore } from '@/stores/authStore';
 import { useUserStore } from '@/stores/userStore';
 import { Loader2, ShieldAlert } from 'lucide-vue-next';
 
 const route     = useRoute();
 const router    = useRouter();
-const auth      = authStore();
 const userStore = useUserStore();
 
 const failed = ref(false);
 
 onMounted(async () => {
-    const token = route.query.token;
     const error = route.query.error;
 
-    if (error || !token) {
+    if (error) {
         failed.value = true;
         return;
     }
-
-    auth.setToken(token, true);
 
     try {
         await userStore.getUserInfo();

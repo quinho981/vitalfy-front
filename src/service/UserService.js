@@ -1,28 +1,17 @@
 import api from '@/services/axios';
-import Cookies from 'js-cookie';
 
 export const UserService = {
-
     async update(data) {
-        const token = Cookies.get('token');
         try {
-            const response = await api.put('/user', data,
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            
+            const response = await api.put('/user', data);
             return response.data;
         } catch (error) {
             throw error;
         }
     },
-    async changePassword(data)
-    {
-        const token = Cookies.get('token');
+    async changePassword(data) {
         try {
-            const response = await api.post('/change-password', data,
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            
+            const response = await api.post('/change-password', data);
             return response.data;
         } catch (error) {
             throw error;

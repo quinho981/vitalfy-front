@@ -150,7 +150,7 @@ const router = useRouter();
 const loading     = ref(false);
 const errorMessage  = ref(false);
 const socialError   = ref(route.query.error === 'social_auth_failed');
-const googleAuthUrl = `${import.meta.env.VITE_BASE_URL}/auth/google`;
+const googleAuthUrl = `${import.meta.env.VITE_BASE_URL.replace(/\/api\/?$/, '')}/api/auth/google`;
 
 const form = ref({
     email: '',

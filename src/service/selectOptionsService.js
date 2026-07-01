@@ -1,33 +1,20 @@
 import api from '@/services/axios';
-import Cookies from 'js-cookie';
 
 export const SelectOptionsService = {
     async getTemplates() {
-        const token = Cookies.get('token');
-        const response = await api.get(`/templates`, { 
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        return response.data
+        const response = await api.get(`/templates`);
+        return response.data;
     },
     async getTemplatesMinimal() {
-        const token = Cookies.get('token');
-        const response = await api.get(`/templates/minimal`, { 
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        return response.data
+        const response = await api.get(`/templates/minimal`);
+        return response.data;
     },
     async getTypes() {
-        const token = Cookies.get('token');
-        const response = await api.get(`/transcript-types`, { 
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        return response.data
+        const response = await api.get(`/transcript-types`);
+        return response.data;
     },
     async getTypesMinimal() {
-        const token = Cookies.get('token');
-        const response = await api.get(`/transcript-types/minimal`, { 
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        return response.data
+        const response = await api.get(`/transcript-types/minimal`);
+        return response.data;
     }
 };

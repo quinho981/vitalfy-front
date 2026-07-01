@@ -1,13 +1,9 @@
 import api from '@/services/axios';
-import Cookies from 'js-cookie';
 
 export const SubscriptionService = {
     async getSubscription() {
-        const token = Cookies.get('token');
         try {
-            const response = await api.get('/subscription', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await api.get('/subscription');
             return response.data;
         } catch (error) {
             console.error('Error fetching subscription:', error);
@@ -16,11 +12,9 @@ export const SubscriptionService = {
     },
 
     async verifyCheckout(sessionId) {
-        const token = Cookies.get('token');
         try {
             const response = await api.get('/subscription/verify-checkout', {
                 params: { session_id: sessionId },
-                headers: { Authorization: `Bearer ${token}` }
             });
             return response.data;
         } catch (error) {
@@ -30,11 +24,8 @@ export const SubscriptionService = {
     },
 
     async createCheckout(plan) {
-        const token = Cookies.get('token');
         try {
-            const response = await api.post('/subscription/checkout', { plan }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await api.post('/subscription/checkout', { plan });
             return response.data;
         } catch (error) {
             console.error('Error creating checkout:', error);
@@ -43,11 +34,8 @@ export const SubscriptionService = {
     },
 
     async cancelSubscription() {
-        const token = Cookies.get('token');
         try {
-            const response = await api.post('/subscription/cancel', {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await api.post('/subscription/cancel', {});
             return response.data;
         } catch (error) {
             console.error('Error cancelling subscription:', error);

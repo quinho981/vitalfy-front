@@ -235,7 +235,6 @@ import { useShowToast } from '@/utils/useShowToast';
 import { Eye, Trash, Mic, Pencil, Calendar, Timer, FileAudio, Loader2, FileText } from 'lucide-vue-next';
 import { useHelpers } from '@/utils/helper';
 import { useI18n } from 'vue-i18n';
-import Cookies from 'js-cookie';
 import api from '@/services/axios';
 
 const { t } = useI18n();
@@ -369,10 +368,9 @@ const deleteTranscript = async (item) => {
 }
 
 const getTypes = async () => {
-    const token = Cookies.get('token')
     loadingTypes.value = true
     try {
-        const response = await api.get(`/transcript-types`, { headers: { Authorization: `Bearer ${token}` } })
+        const response = await api.get(`/transcript-types`)
         dropdownTypes.value = response.data
     } catch (error) {
         console.error(error)

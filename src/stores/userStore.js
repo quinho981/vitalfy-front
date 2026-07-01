@@ -2,26 +2,29 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import api from '@/services/axios';
 import Cookies from 'js-cookie'
+import { secureStorage } from '@/utils/secureStorage'
 
 export const useUserStore = defineStore('user', () => {
-    const userId = ref(Cookies.get('id') || null)
-    const username = ref(Cookies.get('username') || null)
+    const userId = ref(null)
+    const userPhone = ref(null)
+
+    const username  = ref(Cookies.get('username')   || null)
     const userEmail = ref(Cookies.get('user_email') || null)
-    const userPhone = ref(Cookies.get('user_phone') || null)
-    const plan = ref(Cookies.get('plan') || null)
-    const active = ref(Cookies.get('active') || null)
-    const remaining = ref(localStorage.getItem('remaining') || null)
+
+    // plan e active: apenas em memória. Sempre vêm do servidor via getUserInfo().
+    const plan = ref(null)
+    const active = ref(null)
+
+    // remaining: persiste com assinatura HMAC para detectar adulteração entre navegações
+    const remaining = ref(null)
     const recordingTourCompleted = ref(localStorage.getItem('recording_tour_completed') === 'true')
 
     const getUserInfo = async () => {
-        const token      = Cookies.get('token')
         const rememberMe = Cookies.get('remember') === 'true'
         const cookieOpts = rememberMe ? { expires: 30 } : {}
 
         try {
-            const response = await api.get('/user', {
-                headers: { Authorization: `Bearer ${token}` }
-            })
+            const response = await api.get('/user')
 
             userId.value               = response.data.user.id
             username.value             = response.data.user.name
@@ -32,14 +35,12 @@ export const useUserStore = defineStore('user', () => {
             remaining.value            = response.data.remaining
             recordingTourCompleted.value = response.data.user.recording_tour_completed || false
 
-            Cookies.set('id',         userId.value,        cookieOpts)
-            Cookies.set('username',   username.value,      cookieOpts)
-            Cookies.set('user_email', userEmail.value,     cookieOpts)
-            Cookies.set('user_phone', userPhone.value || '', cookieOpts)
-            Cookies.set('plan',       plan.value,          cookieOpts)
-            Cookies.set('active',     active.value,        cookieOpts)
-            localStorage.setItem('remaining',                  remaining.value)
-            localStorage.setItem('recording_tour_completed',   recordingTourCompleted.value)
+            Cookies.set('username',   username.value,  cookieOpts)
+            Cookies.set('user_email', userEmail.value, cookieOpts)
+
+            await secureStorage.set('remaining', remaining.value)
+
+            localStorage.setItem('recording_tour_completed', recordingTourCompleted.value)
 
             return response.data
         } catch (error) {
@@ -47,15 +48,29 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
+    // Lê remaining do cache assinado — roda antes de getUserInfo() para
+    // popular o valor imediatamente sem aguardar a API.
+    const initRemainingFromCache = async () => {
+        const cached = await secureStorage.get('remaining')
+        if (cached !== null) {
+            remaining.value = cached
+        }
+    }
+
     const reset = () => {
-        userId.value = null
-        username.value = null
-        userEmail.value = null
-        userPhone.value = null
-        plan.value = null
-        active.value = null
-        remaining.value = null
+        userId.value               = null
+        username.value             = null
+        userEmail.value            = null
+        userPhone.value            = null
+        plan.value                 = null
+        active.value               = null
+        remaining.value            = null
         recordingTourCompleted.value = false
+
+        Cookies.remove('username')
+        Cookies.remove('user_email')
+        secureStorage.remove('remaining')
+        localStorage.removeItem('recording_tour_completed')
     }
 
     return {
@@ -68,6 +83,7 @@ export const useUserStore = defineStore('user', () => {
         remaining,
         recordingTourCompleted,
         getUserInfo,
-        reset
+        initRemainingFromCache,
+        reset,
     }
 })

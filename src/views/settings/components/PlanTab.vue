@@ -60,6 +60,7 @@ const handleSubscribe = async (plan) => {
     
         // TODO: utilizar websocket para marcar o checkout
         localStorage.setItem('pending_checkout_session', response.session_id);
+        localStorage.setItem('pending_checkout_session_at', String(Date.now()));
         window.location.href = response.url;
     } catch (error) {
         console.error('Error creating checkout:', error);

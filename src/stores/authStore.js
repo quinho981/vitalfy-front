@@ -1,14 +1,13 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import api from '@/services/axios';
 import Cookies from 'js-cookie'
 import { useUserStore } from '@/stores/userStore'
 
-const REMEMBER_DAYS = 30
-
 export const authStore = defineStore('auth', () => {
-    const token    = ref(Cookies.get('token') || null)
-    const remember = ref(Cookies.get('remember') === 'true')
+    // O token JWT vive num cookie HttpOnly controlado pelo servidor.
+    // O frontend não consegue lê-lo — usa logged_in como indicador de sessão ativa.
+    const isAuthenticated = computed(() => !!Cookies.get('logged_in'))
 
     const register = async (payload) => {
         try {
@@ -22,15 +21,8 @@ export const authStore = defineStore('auth', () => {
     const login = async (payload) => {
         try {
             const response = await api.post('/login', payload)
-            const { access_token, remember: rememberMe } = response.data
-
-            token.value    = access_token
-            remember.value = rememberMe
-
-            const cookieOptions = rememberMe ? { expires: REMEMBER_DAYS } : {}
-            Cookies.set('token',    access_token,       cookieOptions)
-            Cookies.set('remember', String(rememberMe), cookieOptions)
-
+            // O servidor seta api_token (HttpOnly), logged_in e client_nonce via Set-Cookie.
+            // Não há token no body — nenhum gerenciamento de cookie aqui.
             return response.data
         } catch (error) {
             return Promise.reject(error)
@@ -39,39 +31,21 @@ export const authStore = defineStore('auth', () => {
 
     const logout = async () => {
         const userStore = useUserStore()
-        const authToken = Cookies.get('token')
 
         try {
-            const response = await api.post('/logout', null, {
-                headers: {
-                    Authorization: `Bearer ${authToken}`
-                }
-            })
+            const response = await api.post('/logout', null)
 
-            token.value = null
             userStore.reset()
 
-            Cookies.remove('id')
-            Cookies.remove('token')
-            Cookies.remove('remember')
-            Cookies.remove('username')
-            Cookies.remove('user_email')
-            Cookies.remove('user_phone')
-            Cookies.remove('plan')
-            Cookies.remove('active')
-            
+            // O servidor limpa api_token e logged_in via Set-Cookie.
+            // Apenas removemos client_nonce localmente (não é HttpOnly).
+            Cookies.remove('client_nonce')
+            Cookies.remove('logged_in')
+
             return response.data
         } catch (error) {
             return Promise.reject(error)
         }
-    }
-
-    const setToken = (value, rememberMe = true) => {
-        token.value    = value
-        remember.value = rememberMe
-        const cookieOptions = rememberMe ? { expires: REMEMBER_DAYS } : {}
-        Cookies.set('token',    value,              cookieOptions)
-        Cookies.set('remember', String(rememberMe), cookieOptions)
     }
 
     const forgotPassword = async (email) => {
@@ -84,17 +58,12 @@ export const authStore = defineStore('auth', () => {
         return response.data
     }
 
-    const isAuthenticated = computed(() => !!token.value)
-
     return {
-        token,
-        remember,
+        isAuthenticated,
         register,
         login,
         logout,
-        setToken,
         forgotPassword,
         resetPassword,
-        isAuthenticated
     }
 })

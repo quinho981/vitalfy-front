@@ -5,8 +5,7 @@ import AppMenuItem from './AppMenuItem.vue';
 import { useUserStore } from '@/stores/userStore'
 import { useRouter } from 'vue-router';
 import { CircleQuestionMark, Plus } from 'lucide-vue-next';
-import api from '@/services/axios';
-import Cookies from 'js-cookie';
+import { SubscriptionService } from '@/service/SubscriptionService';
 import { useHelpers } from '@/utils/helper';
 import { FREE_TRANSCRIPT_LIMIT } from '@/utils/constants';
 
@@ -79,18 +78,11 @@ const redirectToTranscript = () => {
 
 const handleSubscribe = async (plan) => {
     isSubscribing.value = true;
-    const token = Cookies.get('token');
     try {
-        const response = await api.post('/subscription/checkout', { plan }, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-            
-        const checkoutUrl = response.data.url;
-        localStorage.setItem('pending_checkout_session', response.data.session_id);
-
-        window.location.href = checkoutUrl;
+        const data = await SubscriptionService.createCheckout(plan);
+        localStorage.setItem('pending_checkout_session', data.session_id);
+        localStorage.setItem('pending_checkout_session_at', String(Date.now()));
+        window.location.href = data.url;
     } catch (e) {
         console.error(e);
     } finally {
@@ -170,8 +162,8 @@ const handleSubscribe = async (plan) => {
 
                 <div class="flex items-center pt-3 pb-3 relative">
                     <div class="relative flex flex-col items-center">
-                        <Avatar 
-                            :label="userStore.username.charAt(0)"
+                        <Avatar
+                            :label="userStore.username?.charAt(0) ?? '?'"
                             :class="{'mr-[8px]': userStore.plan !== 'Free'}"
                             class="mr-3 flex-shrink-0 uppercase !bg-gradient-to-br !from-blue-500 !to-blue-700 pb-1" 
                             size="small" 

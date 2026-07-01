@@ -515,6 +515,7 @@ watch([getPrimary, getSurface, isDarkTheme], () => setColorOptions(), { immediat
 const checkCheckoutStatus = async () => {
     if (route.query.checkout_cancelled === 'true') {
         localStorage.removeItem('pending_checkout_session')
+        localStorage.removeItem('pending_checkout_session_at')
     } 
 
     if (route.query.checkout_success === 'true' && route.query.session_id) {
@@ -524,6 +525,7 @@ const checkCheckoutStatus = async () => {
             if (result.success) {
                 console.log('Checkout verificado com sucesso. Atualizando informações do usuário...');
                 localStorage.removeItem('pending_checkout_session');
+                localStorage.removeItem('pending_checkout_session_at');
                 await userStore.getUserInfo();
                 
                 showSubscriptionSuccessModal.value = true;

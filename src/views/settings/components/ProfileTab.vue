@@ -110,7 +110,6 @@ const updateUser = () => {
             userStore.userPhone = payload.phone || null
             Cookies.set('username', form.name)
             Cookies.set('user_email', form.email)
-            Cookies.set('user_phone', payload.phone || '')
 
             if(form.specialty) {
                 localStorage.setItem("favorite", form.specialty)

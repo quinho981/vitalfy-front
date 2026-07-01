@@ -57,6 +57,7 @@ const subscribe = async (planKey) => {
     try {
         const data = await SubscriptionService.createCheckout(planKey);
         localStorage.setItem('pending_checkout_session', data.session_id);
+        localStorage.setItem('pending_checkout_session_at', String(Date.now()));
         window.location.href = data.url;
     } catch (e) {
         console.error(e);
